@@ -37,14 +37,16 @@ Copy the necessary config files where they need to go
 
 From the webroot:
 
-    cp lib/pails/example/* .
+    cp -r lib/pails/example/* .
 
-Verify that .htaccess and config/application.php.example exist
+Verify that .htaccess and config/application.php.default exist
 
 Clone php-activerecord into the lib directory
 ---------------------------------------------
 
 pails uses php-activerecord for persistence. This makes data access trivial.
+
+    git clone https://github.com/jpfuentes2/php-activerecord.git lib/php-activerecord
 
 Configure your app
 ------------------
