@@ -5,7 +5,25 @@ Pails is a seriously lightweight MVC framework written in PHP. The overarching
 vision is that less code is more powerful (and certainly gives rise to fewer
 bugs).
 
-For now, here's how to use pails:
+You can build a pails app using some automated scripts OR manually. Using scripts
+is probably faster:
+
+    git clone https://github.com/bparks/pails.git
+    pails/tools/pails new my_pails_app    # Creates a new app
+    cd my_pails_app
+    ../pails/tools/pails server    # Runs the PHP development server (requires PHP 5.4+)
+
+TODOs
+-----
+
+* Make the scripts more resilient to symlinks
+* Make a version of the scripts that you can install to a path
+* Build an example app
+* Make a shiny new pails app do more than complain about missing pieces
+* Encapsulate more of the functionality into classes
+
+The manual way
+==============
 
 Construct a webroot
 -------------------
