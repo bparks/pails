@@ -1,0 +1,18 @@
+#!/bin/bash
+
+TOOLS_DIR=`dirname $0`
+COMMAND=$1
+
+shift
+
+case $COMMAND in
+	'n'|'ne'|'new')
+		$TOOLS_DIR/pails-new $@
+		;;
+	's'|'se'|'ser'|'serv'|'serve'|'server')
+		$TOOLS_DIR/pails-server $@
+		;;
+	*)
+		echo "Unknown command $COMMAND"
+		;;
+esac

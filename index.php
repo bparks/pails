@@ -22,22 +22,38 @@ session_start();
 
 console_log('Starting Pails request processing');
 
+if (!file_exists('config/application.php'))
+{
+	console_log('ERROR: At a minimum, config/application.php is REQUIRED');
+	exit();
+}
+
 /* Include some files */
 require_once('config/application.php'); //Library inclusion and setup
 
 /* --- php-activerecord setup --- */
-require_once 'lib/php-activerecord/ActiveRecord.php';
-date_default_timezone_set('UTC');
- 
-ActiveRecord\Config::initialize(function($cfg)
+if (file_exists('lib/php-activerecord/ActiveRecord.php'))
 {
-	global $ENV;
-	global $CONNECTION_STRINGS;
-	$cfg->set_model_directory('models');
-	$cfg->set_connections($CONNECTION_STRINGS);
+	require_once('lib/php-activerecord/ActiveRecord.php');
+	date_default_timezone_set('UTC');
 
-	$cfg->set_default_connection($ENV);
-});
+	if (!isset($CONNECTION_STRINGS))
+	{
+		console_log('No connection strings set. Disabling php-activerecord support.');
+	}
+	else
+	{
+		ActiveRecord\Config::initialize(function($cfg)
+		{
+			global $ENV;
+			global $CONNECTION_STRINGS;
+			$cfg->set_model_directory('models');
+
+			$cfg->set_connections($CONNECTION_STRINGS);
+			$cfg->set_default_connection($ENV);
+		});
+	}
+}
 /* --- End php-activerecord setup --- */
 
 //TODO: Don't automatically include config/common.php
@@ -163,7 +179,14 @@ if ($view)
 	}
 
 	//Finally, include the layout view, which should render everything
-	include('views/_layout.php');
+	if (file_exists('views/_layout.php'))
+	{
+		include('views/_layout.php');
+	}
+	else
+	{
+		yield();
+	}
 }
 else
 {

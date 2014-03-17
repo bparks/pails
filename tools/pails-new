@@ -1,0 +1,21 @@
+#!/bin/bash
+
+TOOLS_DIR=`dirname $0`
+
+APP_DIR=.
+
+if [ $# -eq 1 ]; then
+	APP_DIR=$1
+fi
+
+echo "Creating new pails app in $APP_DIR"
+
+mkdir -p $APP_DIR || exit 1
+
+cp -r $TOOLS_DIR/../default/* $APP_DIR/
+
+mkdir -p $APP_DIR/lib/pails
+cp -r $TOOLS_DIR/../*.php $APP_DIR/lib/pails/
+cp -r $TOOLS_DIR/../lib $APP_DIR/lib/pails/
+
+#$GIT_COMMAND https://github.com/jpfuentes2/php-activerecord.git lib/php-activerecord

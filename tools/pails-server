@@ -1,0 +1,12 @@
+#!/bin/bash
+
+PHP_VERSION=$(php --version | head -1 | cut -f 2 -d ' ')
+PHP_MAJOR=$(echo $PHP_VERSION | cut -d . -f 1)
+PHP_MINOR=$(echo $PHP_VERSION | cut -d . -f 2)
+
+if [ $PHP_MAJOR -lt 5 ] || ([ $PHP_MAJOR -eq 5 ] && [ $PHP_MINOR -lt 4 ]) ; then
+	echo 'PHP version 5.4 or later is required to run the development server'
+	exit 1
+fi
+
+php -S localhost:8000 lib/pails/router.php
