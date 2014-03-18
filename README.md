@@ -3,7 +3,19 @@ Pails
 
 Pails is a seriously lightweight MVC framework written in PHP. The overarching
 vision is that less code is more powerful (and certainly gives rise to fewer
-bugs).
+bugs). [Read more on my blog][blog]
+
+Sites using pails
+-----------------
+
+* [#dreammaker][dreammaker] - A platform for people to make dreams and others
+  to help them come true
+* [Front Range Barbeque][frbbq] - The version currently under development uses pails
+* [MailOver][mailover] - Send mail to your friends via twitter! (Only the dev
+  site uses pails)
+
+Building a site with pails
+--------------------------
 
 You can build a pails app using some automated scripts OR manually. Using scripts
 is probably faster:
@@ -88,3 +100,8 @@ Questions?
 ----------
 
 Send email to bparks@synapsesoftware.com.
+
+[blog]: http://bparks.github.io/
+[dreammaker]: http://dreams.thoughtcolony.com/
+[frbbq]: http://frbbq.com/
+[mailover]: http://mailover.synapsesoftware.com/
