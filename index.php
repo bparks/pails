@@ -1,72 +1,53 @@
 <?php
-// First things first. Figure out what environment we're running in
-$ENV = 'development';
-if (file_exists('.environment'))
-	$ENV = trim(file_get_contents('.environment'));
-
 //Pull in the rest of the library
+require_once(__DIR__.'/lib/Application.php');
 require_once(__DIR__.'/lib/Controller.php');
+require_once(__DIR__.'/lib/Request.php');
 
 //Change directory to the webroot
 chdir($_SERVER['DOCUMENT_ROOT']);
 
 function console_log($obj) {
-	global $ENV;
-	if ($ENV == 'production') return;
-	$stdout = fopen('php://stdout', 'w');
-    fwrite($stdout, "LOGGING: ".print_r($obj, true)."\n");
-    fclose($stdout);
+	Pails\Application::log("DEPRECATION NOTICE: Use Application::log() isntead of console_log()");
+	Pails\Application::log($obj);
 }
 
+//Start a session
 session_start();
-
-console_log('Starting Pails request processing');
 
 if (!file_exists('config/application.php'))
 {
-	console_log('ERROR: At a minimum, config/application.php is REQUIRED');
+	Pails\Application::log('ERROR: At a minimum, config/application.php is REQUIRED');
 	exit();
 }
 
 /* Include some files */
 require_once('config/application.php'); //Library inclusion and setup
 
+$application = new Pails\Application(array(
+	'connection_strings' => $CONNECTION_STRINGS,
+	'routes' => $ROUTES
+));
+
 /* --- php-activerecord setup --- */
 if (file_exists('lib/php-activerecord/ActiveRecord.php'))
 {
 	require_once('lib/php-activerecord/ActiveRecord.php');
 	date_default_timezone_set('UTC');
-
-	if (!isset($CONNECTION_STRINGS))
-	{
-		console_log('No connection strings set. Disabling php-activerecord support.');
-	}
-	else
-	{
-		ActiveRecord\Config::initialize(function($cfg)
-		{
-			global $ENV;
-			global $CONNECTION_STRINGS;
-			$cfg->set_model_directory('models');
-
-			$cfg->set_connections($CONNECTION_STRINGS);
-			$cfg->set_default_connection($ENV);
-		});
-	}
 }
 /* --- End php-activerecord setup --- */
 
-//TODO: Don't automatically include config/common.php
 if (file_exists('config/common.php'))
 {
-	console_log('DEPRECATION NOTICE: Use of config/common.php is discouraged. Use a common ControllerBase or module.');
+	Pails\Application::log('DEPRECATION NOTICE: Use of config/common.php is discouraged. Use a common ControllerBase or module.');
 	require_once('config/common.php'); //User-defined functions	
 }
 
-/* Necessary functions */
+//After this point, we have an Application in $application. We should just be
+//able to call $application->run() and that will take care of the rest, but
+//we're not quite there yet
 
-//Initialize the model
-$model = null;
+$application->run();
 
 function to_class_name($string)
 {
@@ -84,9 +65,6 @@ function to_table_name($string)
 
 function render_partial($path, $local_model = null)
 {
-	global $model;
-	global $current_user;
-
 	//Save model
 	$save_model = $model;
 	if ($local_model)
@@ -96,100 +74,5 @@ function render_partial($path, $local_model = null)
 
 	//Restore model
 	$model = $save_model;
-}
-
-function uri_parts()
-{
-	$url = parse_url($_SERVER['REQUEST_URI']);
-	return explode('/', substr($url['path'], 1));
-}
-
-function default_controller()
-{
-	$uri_parts = uri_parts();
-	return strlen($uri_parts[0]) > 0 ? $uri_parts[0] : 'static';
-}
-
-function default_action()
-{
-	$uri_parts = uri_parts();
-	return count($uri_parts) > 1 ? $uri_parts[1] : 'index';
-}
-
-//First, find the appropriate controller
-$current_route = $ROUTES['*'];
-$uri_parts = uri_parts();
-if ($uri_parts[0] != '*' /* '*' is not a valid route */ && array_key_exists($uri_parts[0], $ROUTES))
-	$current_route = $ROUTES[$uri_parts[0]];
-
-$controller_name = to_class_name($current_route[0]) . 'Controller';
-$action_name = $current_route[1];
-
-include 'controllers/'.$controller_name.'.php';
-
-$controller = new $controller_name();
-
-//Check to ensure controller inherits from Pails\Controller
-if (!is_subclass_of($controller, 'Pails\Controller'))
-{
-	header('HTTP/1.1 500 Internal Server Error');
-	echo 'The controller ' . $controller_name . ' does not extend Pails\Controller.';
-	exit();
-}
-
-
-$view = $current_route[0].'/'.$action_name;
-$action_result = null;
-
-//Perform the requested action
-if (in_array($action_name, get_class_methods($controller)))
-{
-	$opts = uri_parts();
-	array_shift($opts);
-	array_shift($opts);
-	$action_result = count($opts) ? $controller->$action_name($opts) : $controller->$action_name();
-}
-else
-{
-	header('HTTP/1.1 404 File Not Found');
-	echo 'The controller ' . $controller_name . ' does not have a public method ' . $action_name . '.';
-	exit();
-}
-
-if ($view)
-{
-	//Then, find the appropriate view and construct the "yield" method
-	$view_path = 'views/'.$view.'.php';
-
-	if (!file_exists($view_path))
-	{
-		header('HTTP/1.1 404 File Not Found');
-		echo 'The view ' . $view_path . ' does not exist.';
-		exit();
-	}
-
-	function yield()
-	{
-		global $view_path;
-		global $logged_in;
-		global $current_user;
-		global $model;
-
-		include($view_path);
-	}
-
-	//Finally, include the layout view, which should render everything
-	if (file_exists('views/_layout.php'))
-	{
-		include('views/_layout.php');
-	}
-	else
-	{
-		yield();
-	}
-}
-else
-{
-	echo json_encode($action_result);
 }
 ?>

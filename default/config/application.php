@@ -16,7 +16,7 @@ $CONNECTION_STRINGS = array(
 
 $ROUTES = array(
 	'*' => array(
-		default_controller(),
-		default_action()
+		false,
+		false
 		)
 	);

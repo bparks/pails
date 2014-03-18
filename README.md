@@ -20,7 +20,6 @@ TODOs
 * Make a version of the scripts that you can install to a path
 * Build an example app
 * Make a shiny new pails app do more than complain about missing pieces
-* Encapsulate more of the functionality into classes
 
 The manual way
 ==============
