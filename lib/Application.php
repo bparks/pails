@@ -137,6 +137,6 @@ class Application
 	private function default_action($request)
 	{
 		$uri_parts = $request->raw_parts;
-		return count($uri_parts) > 1 ? $uri_parts[1] : 'index';
+		return count($uri_parts) > 1 && $uri_parts[1] != '' ? $uri_parts[1] : 'index';
 	}
 }
