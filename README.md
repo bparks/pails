@@ -5,6 +5,12 @@ Pails is a seriously lightweight MVC framework written in PHP. The overarching
 vision is that less code is more powerful (and certainly gives rise to fewer
 bugs). [Read more on my blog][blog]
 
+Pails is licensed under the [GPLv3][gplv3]. If the GPL doesn't work for you,
+let's talk about your use case. If you need verification that this is free
+software (for your boss, CTO, etc.), that can also be arranged.
+
+Come talk about pails in #pails on Freenode.
+
 Sites using pails
 -----------------
 
@@ -102,6 +108,7 @@ Questions?
 Send email to bparks@synapsesoftware.com.
 
 [blog]: http://bparks.github.io/
+[gplv3]: http://www.gnu.org/licenses/gpl-3.0.html
 [dreammaker]: http://dreams.thoughtcolony.com/
 [frbbq]: http://frbbq.com/
 [mailover]: http://mailover.synapsesoftware.com/
