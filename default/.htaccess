@@ -1,0 +1,6 @@
+Options +FollowSymlinks +SymlinksIfOwnerMatch
+
+RewriteEngine On
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule (.*$) /lib/pails/index.php [L]
