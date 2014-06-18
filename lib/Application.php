@@ -87,7 +87,7 @@ class Application
 				exit();
 			}
 
-			$controller->render();
+			$controller->render_page();
 		}
 		else
 		{

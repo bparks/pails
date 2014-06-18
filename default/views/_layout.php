@@ -12,7 +12,7 @@
 	If you like pails, <a href="mailto:bparks@synapsesoftware.com">tell us
 	about it</a>!
 	</p>
-	<?php $this->yield(); ?>
+	<?php $this->render(); ?>
 </div>
 </body>
 </html>

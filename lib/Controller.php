@@ -35,7 +35,7 @@ class Controller
 		return $controller;
 	}
 	
-	public function render()
+	public function render_page()
 	{
 		//Finally, include the layout view, which should render everything
 		if (file_exists('views/_layout.php'))
@@ -44,11 +44,11 @@ class Controller
 		}
 		else
 		{
-			$this->yield();
+			$this->render();
 		}
 	}
 
-	public function yield()
+	public function render()
 	{
 		include('views/'.$this->view.'.php');
 	}
