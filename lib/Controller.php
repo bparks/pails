@@ -16,6 +16,11 @@ class Controller
 			exit();
 		}
 
+		if (file_exists('controllers/ControllerBase.php'))
+		{
+			include 'controllers/ControllerBase.php';
+		}
+
 		include 'controllers/'.$controller_name.'.php';
 		$controller = new $controller_name();
 
@@ -51,13 +56,10 @@ class Controller
 	public function render_partial($path, $local_model = null)
 	{
 		//Save model
-		$save_model = $model;
+		$model = $this->model;
 		if ($local_model)
 			$model = $local_model;
 
 		include('views/'.$path.'.php');
-
-		//Restore model
-		$model = $save_model;
 	}
 }

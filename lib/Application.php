@@ -50,6 +50,21 @@ class Application
 		//Perform the requested action
 		if (in_array($request->action, get_class_methods($controller)))
 		{
+			if (isset($controller->before_actions))
+			{
+				foreach ($controller->before_actions as $key => $value)
+				{
+					if (is_int($key))
+					{
+						$key = $value;
+						unset($value);
+					}
+					if (isset($value) && isset($value['except']) && in_array($request->action, $value['except']))
+						continue;
+					$controller->$key();
+				}
+			}
+
 			$action_name = $request->action;
 			$opts = $request->raw_parts;
 			array_shift($opts);
