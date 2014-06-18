@@ -47,4 +47,17 @@ class Controller
 	{
 		include('views/'.$this->view.'.php');
 	}
+
+	public function render_partial($path, $local_model = null)
+	{
+		//Save model
+		$save_model = $model;
+		if ($local_model)
+			$model = $local_model;
+
+		include('views/'.$path.'.php');
+
+		//Restore model
+		$model = $save_model;
+	}
 }
