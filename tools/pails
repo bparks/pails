@@ -9,6 +9,9 @@ case $COMMAND in
 	'n'|'ne'|'new')
 		$TOOLS_DIR/pails-new $@
 		;;
+	'u'|'up'|'upd'|'upda'|'updat'|'update')
+		$TOOLS_DIR/pails-update $@
+		;;
 	's'|'se'|'ser'|'serv'|'serve'|'server')
 		$TOOLS_DIR/pails-server $@
 		;;
