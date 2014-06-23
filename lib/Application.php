@@ -66,6 +66,12 @@ class Application
 				}
 			}
 
+			$action_name = $request->action;
+			$opts = $request->raw_parts;
+			array_shift($opts);
+			array_shift($opts);
+			$action_result = count($opts) ? $controller->$action_name($opts) : $controller->$action_name();
+
 			//Handle after actions
 			if (isset($controller->after_actions))
 			{
@@ -81,12 +87,6 @@ class Application
 					$controller->$key();
 				}
 			}
-
-			$action_name = $request->action;
-			$opts = $request->raw_parts;
-			array_shift($opts);
-			array_shift($opts);
-			$action_result = count($opts) ? $controller->$action_name($opts) : $controller->$action_name();
 		}
 		else
 		{
