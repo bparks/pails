@@ -50,9 +50,26 @@ class Application
 		//Perform the requested action
 		if (in_array($request->action, get_class_methods($controller)))
 		{
+			//Handle before actions
 			if (isset($controller->before_actions))
 			{
 				foreach ($controller->before_actions as $key => $value)
+				{
+					if (is_int($key))
+					{
+						$key = $value;
+						unset($value);
+					}
+					if (isset($value) && isset($value['except']) && in_array($request->action, $value['except']))
+						continue;
+					$controller->$key();
+				}
+			}
+
+			//Handle after actions
+			if (isset($controller->after_actions))
+			{
+				foreach ($controller->after_actions as $key => $value)
 				{
 					if (is_int($key))
 					{
