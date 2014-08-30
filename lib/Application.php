@@ -127,7 +127,7 @@ class Application
 				$cfg->set_model_directory('models');
 
 				$cfg->set_connections($this->connection_strings);
-				$cfg->set_default_connection(Pails\Application::environment());
+				$cfg->set_default_connection(Application::environment());
 			});
 		}
 	}
