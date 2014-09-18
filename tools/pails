@@ -10,7 +10,7 @@ COMMAND=$1
 shift
 
 case $COMMAND in
-	'n'|'ne'|'new')
+	'n'|'ne'|'new'|'create')
 		$TOOLS_DIR/pails-new $@
 		;;
 	'u'|'up'|'upd'|'upda'|'updat'|'update')
@@ -18,6 +18,9 @@ case $COMMAND in
 		;;
 	's'|'se'|'ser'|'serv'|'serve'|'server')
 		$TOOLS_DIR/pails-server $@
+		;;
+	'-v'|'--ver'|'--version'|'version')
+		cat $TOOLS_DIR/../version
 		;;
 	*)
 		echo "Unknown command $COMMAND"
