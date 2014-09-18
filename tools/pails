@@ -1,6 +1,10 @@
 #!/bin/bash
 
-TOOLS_DIR=`dirname $0`
+PAILS_PATH=`which $0`
+while [ -L $PAILS_PATH ]; do
+	PAILS_PATH=`readlink $PAILS_PATH`
+done
+TOOLS_DIR=`dirname $PAILS_PATH`
 COMMAND=$1
 
 shift
