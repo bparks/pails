@@ -47,7 +47,14 @@ if (file_exists('config/common.php'))
 //able to call $application->run() and that will take care of the rest, but
 //we're not quite there yet
 
-$application->run();
+try
+{
+	$application->run();
+}
+catch (Exception $e)
+{
+	echo '<pre>'.$e->getMessage()."\n\tat ".$e->getFile().':'.$e->getLine()."\n".$e->getTraceAsString().'</pre>';
+}
 
 function to_class_name($string)
 {
