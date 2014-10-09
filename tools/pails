@@ -1,5 +1,24 @@
 #!/bin/bash
 
+function usage() {
+cat <<EOF
+Pails control script v0.1
+-------------------------
+    -h| --help           This help text.
+    -v| --version        Show version of pails
+   new| create <name>    Create a new pails application with given name
+        update <name>    Update existing app given name
+        server <name>    Start pails server given name
+
+-------------------------
+Shortcuts are supported
+n - new
+u - update
+s - server
+EOF
+exit 1
+}
+
 PAILS_PATH=`which $0`
 while [ -L $PAILS_PATH ]; do
 	PAILS_PATH=`readlink $PAILS_PATH`
@@ -22,7 +41,11 @@ case $COMMAND in
 	'-v'|'--ver'|'--version'|'version')
 		cat $TOOLS_DIR/../version
 		;;
+        '-h'|'-?'|'--help')
+                usage
+		;;
 	*)
 		echo "Unknown command $COMMAND"
+		usage
 		;;
 esac
