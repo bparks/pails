@@ -6,6 +6,7 @@ class Application
 {
 	private $connection_strings;
 	private $routes;
+	private $app_name;
 	private $yield;
 
 	private static $environment = '';
@@ -35,6 +36,8 @@ class Application
 			$this->connection_strings = $args['connection_strings'];
 		if (array_key_exists('routes', $args))
 			$this->routes = $args['routes'];
+		if (array_key_exists('app_name', $args))
+			$this->app_name = $args['app_name'];
 	}
 
 	public function run()
@@ -47,8 +50,18 @@ class Application
 		$controller->view = $request->controller.'/'.$request->action;
 		$action_result = null;
 
+		// Use reflection class to extract valid methods strictly on the controller
+		$reflection_class = new \ReflectionClass($controller);
+		$class_methods = $reflection_class->getMethods(\ReflectionMethod::IS_PUBLIC);
+		$functions = array();
+		foreach($class_methods as $function)
+		{
+			if ($function->class === get_class($controller)) // no superclass methods
+				$functions[] = $function->name;
+		}
+
 		//Perform the requested action
-		if (in_array($request->action, get_class_methods($controller)))
+		if (in_array($request->action, $functions))
 		{
 			//Handle before actions
 			if (isset($controller->before_actions))
@@ -163,7 +176,7 @@ class Application
 	private function default_controller($request)
 	{
 		$uri_parts = $request->raw_parts;
-		return strlen($uri_parts[0]) > 0 ? $uri_parts[0] : 'static';
+		return strlen($uri_parts[0]) > 0 ? $uri_parts[0] : $this->app_name;
 	}
 
 	private function default_action($request)

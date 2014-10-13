@@ -14,6 +14,8 @@ $CONNECTION_STRINGS = array(
 		'development' => 'mysql://localhost/mydb'
 	);
 
+$APP_NAME = ''; // Really suggest providing an app name here.
+
 $ROUTES = array(
 	'*' => array(
 		false,

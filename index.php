@@ -26,7 +26,8 @@ require_once('config/application.php'); //Library inclusion and setup
 
 $application = new Pails\Application(array(
 	'connection_strings' => $CONNECTION_STRINGS,
-	'routes' => $ROUTES
+	'routes' => $ROUTES,
+	'app_name' => $APP_NAME
 ));
 
 /* --- php-activerecord setup --- */
@@ -40,7 +41,7 @@ if (file_exists('lib/php-activerecord/ActiveRecord.php'))
 if (file_exists('config/common.php'))
 {
 	Pails\Application::log('DEPRECATION NOTICE: Use of config/common.php is discouraged. Use a common ControllerBase or module.');
-	require_once('config/common.php'); //User-defined functions	
+	require_once('config/common.php'); //User-defined functions
 }
 
 //After this point, we have an Application in $application. We should just be
@@ -58,15 +59,15 @@ catch (Exception $e)
 
 function to_class_name($string)
 {
-	// underscored to upper-camelcase 
-	// e.g. "this_method_name" -> "ThisMethodName" 
-	return preg_replace('/(?:^|_)(.?)/e',"strtoupper('$1')",$string); 
+	// underscored to upper-camelcase
+	// e.g. "this_method_name" -> "ThisMethodName"
+	return preg_replace('/(?:^|_)(.?)/e',"strtoupper('$1')",$string);
 }
 
 function to_table_name($string)
 {
-	// underscored to lower-camelcase 
-	// e.g. "this_method_name" -> "thisMethodName" 
+	// underscored to lower-camelcase
+	// e.g. "this_method_name" -> "thisMethodName"
 	return preg_replace('/_(.?)/e',"strtoupper('$1')",$string);
 }
 
