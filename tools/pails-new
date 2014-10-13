@@ -20,22 +20,22 @@ cp -r $TOOLS_DIR/../default/* $APP_DIR/
 cp -r $TOOLS_DIR/../default/.htaccess $APP_DIR/ #Make sure we got the .htaccess file for apache
 
 # Make directory for template
-mkdir -p $APP_DIR/views/$APP_DIR
+mkdir -p $APP_DIR/views/$APP_NAME
 # Empty view file
-touch $APP_DIR/views/$APP_DIR/index.php
+touch $APP_DIR/views/$APP_NAME/index.php
 
 # Edit default controller to match applications name
-cd $APP_DIR/controllers
+pushd $APP_DIR/controllers > /dev/null
 mv DefaultController.php ${APP_NAME_TC}Controller.php
 sed -E -i .old "s/DefaultController/${APP_NAME_TC}Controller/g" ${APP_NAME_TC}Controller.php
 rm *.old
-cd ../..
+popd > /dev/null
 
 # Edit config's app name
-cd $APP_DIR/config
+pushd $APP_DIR/config > /dev/null
 sed -E -i .old "s:APP_NAME = '':APP_NAME = '${APP_NAME}':" application.php
 rm *.old
-cd ../..
+popd > /dev/null
 
 
 mkdir $APP_DIR/lib/pails
