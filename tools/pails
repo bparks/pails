@@ -39,7 +39,7 @@ case $COMMAND in
 		$TOOLS_DIR/pails-server $@
 		;;
 	'-v'|'--ver'|'--version'|'version')
-		cat $TOOLS_DIR/../version
+		cat $TOOLS_DIR/../VERSION
 		;;
         '-h'|'-?'|'--help')
                 usage
