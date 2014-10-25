@@ -6,6 +6,7 @@ class Controller
 {
 	public $view;
 	public $model;
+	public $layout;
 
 	public static function getInstance($controller_name)
 	{
@@ -32,15 +33,18 @@ class Controller
 			exit();
 		}
 
+		//Initialize stuff
+		$controller->layout = 'views/_layout.php';
+
 		return $controller;
 	}
 	
 	public function render_page()
 	{
 		//Finally, include the layout view, which should render everything
-		if (file_exists('views/_layout.php'))
+		if ($this->layout !== false && file_exists($this->layout))
 		{
-			include('views/_layout.php');
+			include($this->layout);
 		}
 		else
 		{
