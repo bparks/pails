@@ -54,6 +54,7 @@ try
 }
 catch (Exception $e)
 {
+	header('HTTP/1.0 500 Internal Server Error');
 	echo '<pre>'.$e->getMessage()."\n\tat ".$e->getFile().':'.$e->getLine()."\n".$e->getTraceAsString().'</pre>';
 }
 
