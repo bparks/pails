@@ -7,11 +7,6 @@ require_once(__DIR__.'/lib/Request.php');
 //Change directory to the webroot
 chdir($_SERVER['DOCUMENT_ROOT']);
 
-function console_log($obj) {
-	Pails\Application::log("DEPRECATION NOTICE: Use Application::log() isntead of console_log()");
-	Pails\Application::log($obj);
-}
-
 //Start a session
 session_start();
 
@@ -38,16 +33,6 @@ if (file_exists('lib/php-activerecord/ActiveRecord.php'))
 }
 /* --- End php-activerecord setup --- */
 
-if (file_exists('config/common.php'))
-{
-	Pails\Application::log('DEPRECATION NOTICE: Use of config/common.php is discouraged. Use a common ControllerBase or module.');
-	require_once('config/common.php'); //User-defined functions
-}
-
-//After this point, we have an Application in $application. We should just be
-//able to call $application->run() and that will take care of the rest, but
-//we're not quite there yet
-
 try
 {
 	$application->run();
@@ -70,10 +55,5 @@ function to_table_name($string)
 	// underscored to lower-camelcase
 	// e.g. "this_method_name" -> "thisMethodName"
 	return preg_replace('/_(.?)/e',"strtoupper('$1')",$string);
-}
-
-function render_partial($path, $local_model = null)
-{
-	Pails\Application::log('render_partial() is deprecated and has no behavior. Use $this->render_partial()');
 }
 ?>
