@@ -1,0 +1,44 @@
+#!/bin/bash
+
+TOOLS_DIR=`dirname $0`
+
+APP_DIR=.
+
+if [ $# -lt 1 ]; then
+	echo "Must provide the name of a plugin to install"
+	exit 1
+fi
+
+PLUGIN_NAME=$1
+DIRECTORY_LOCATION=/tmp/pails-directory
+
+curl -s -L https://raw.githubusercontent.com/bparks/pails-plugins/master/directory > $DIRECTORY_LOCATION
+PLUGIN_INFO=$(egrep "^$PLUGIN_NAME=" $DIRECTORY_LOCATION)
+if [ -z "$PLUGIN_INFO" ]; then
+	echo "The plugin '$PLUGIN_NAME' does not exist or is not in the directory"
+	exit 1
+fi
+
+if [ -e lib/$PLUGIN_NAME ]; then
+	if [ -d lib/$PLUGIN_NAME -o -L lib/$PLUGIN_NAME ]; then
+		echo "The plugin '$PLUGIN_NAME' may already be installed"
+	else
+		echo "ERROR: There is a file with the same name as '$PLUGIN_NAME' in the lib directory"
+	fi
+	exit 1
+fi
+
+echo "Installing plugin $1 in $APP_DIR/lib/$1"
+
+PLUGIN_REPO_PATH=${PLUGIN_INFO#*=}
+curl -s -L $PLUGIN_REPO_PATH > /tmp/$PLUGIN_NAME.zip
+unzip -o -d /tmp/$PLUGIN_NAME /tmp/$PLUGIN_NAME.zip > /dev/null 2>&1
+
+mkdir -p $APP_DIR || exit 1
+mkdir -p $APP_DIR/lib || exit 1
+PLUGIN_FILES=`ls /tmp/$PLUGIN_NAME | head -1`
+mv /tmp/$PLUGIN_NAME/$PLUGIN_FILES lib/$PLUGIN_NAME
+
+#Clean up
+rm -r /tmp/$PLUGIN_NAME
+rm -r /tmp/$PLUGIN_NAME.zip

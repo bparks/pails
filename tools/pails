@@ -9,19 +9,21 @@ Pails control script v0.1
    new| create <name>    Create a new pails application with given name
         update <name>    Update existing app given name
         server <name>    Start pails server given name
+   add| install <plugin> Install a pails plugin from the repository
 
 -------------------------
 Shortcuts are supported
 n - new
 u - update
 s - server
+i - install
 EOF
 exit 1
 }
 
 PAILS_PATH=`which $0`
 while [ -L $PAILS_PATH ]; do
-	PAILS_PATH=`readlink $PAILS_PATH`
+    PAILS_PATH=`readlink $PAILS_PATH`
 done
 TOOLS_DIR=`dirname $PAILS_PATH`
 COMMAND=$1
@@ -29,26 +31,26 @@ COMMAND=$1
 shift
 
 case $COMMAND in
-	'n'|'ne'|'new'|'create')
-		$TOOLS_DIR/pails-new $@
-		;;
-	'u'|'up'|'upd'|'upda'|'updat'|'update')
-		$TOOLS_DIR/pails-update $@
-		;;
-	's'|'se'|'ser'|'serv'|'serve'|'server')
-		$TOOLS_DIR/pails-server $@
-		;;
-	'-v'|'--ver'|'--version'|'version')
-		cat $TOOLS_DIR/../VERSION
-		;;
-        '-h'|'-?'|'--help')
-                usage
-		;;
-        '-h'|'-?'|'--help')
-                usage
-		;;
-	*)
-		echo "Unknown command $COMMAND"
-		usage
-		;;
+    'n'|'ne'|'new'|'create')
+        $TOOLS_DIR/pails-new $@
+        ;;
+    'u'|'up'|'upd'|'upda'|'updat'|'update')
+        $TOOLS_DIR/pails-update $@
+        ;;
+    's'|'se'|'ser'|'serv'|'serve'|'server')
+        $TOOLS_DIR/pails-server $@
+        ;;
+    'i'|'in'|'ins'|'inst'|'insta'|'instal'|'install'|'add')
+        $TOOLS_DIR/pails-install $@
+        ;;
+    '-v'|'--ver'|'--version'|'version')
+        cat $TOOLS_DIR/../VERSION
+        ;;
+    '-h'|'-?'|'--help')
+        usage
+        ;;
+    *)
+        echo "Unknown command $COMMAND"
+        usage
+        ;;
 esac
