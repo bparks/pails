@@ -11,15 +11,6 @@ software (for your boss, CTO, etc.), that can also be arranged.
 
 Come talk about pails in #pails on Freenode.
 
-Sites using pails
------------------
-
-* [#dreammaker][dreammaker] - A platform for people to make dreams and others
-  to help them come true
-* [Front Range Barbeque][frbbq] - The version currently under development uses pails
-* [MailOver][mailover] - Send mail to your friends via twitter! (Only the dev
-  site uses pails)
-
 Building a site with pails
 --------------------------
 
@@ -39,16 +30,13 @@ Then, run the pails command to build out a new tree for you:
     cd my_pails_app
     pails server    # Runs the PHP development server (requires PHP 5.4+)
 
-TODOs
------
-
-* Build an example app
-* Make a shiny new pails app do more than complain about missing pieces
-
 Build an app!
 -------------
 
-Models go in /models and extend ActiveRecord\Model.
+Models go in /models and extend ActiveRecord\Model. If you're using models, you'll
+need the pails activerecord plugin:
+
+    pails install activerecord
 
 Controllers go in /controllers with names like StuffController (case matters)
 and extend Pails\Controller.
@@ -57,6 +45,15 @@ Views go in /views, in subfolders named by controller (all lowercase). Thus, a
 view for the 'index' action of StuffController would be views/stuff/index.php.
 
 Each *public* method in a Controller class is a valid action.
+
+Plugins
+-------
+
+We've been using Pails over at [Synapse Software][synapse] for almost a year now,
+so we have a wealth of additional functionality we're packaging up as plugins. You
+too can build plugins and contribute them. Use this [test plugin][test_plugin] as
+an example. If you want your plugin to be listed in the directory, submit a pull
+request against the [pails-plugins][pails-plugins] repository.
 
 Before and after actions
 ------------------------
@@ -88,59 +85,8 @@ Questions?
 
 Send email to bparks@synapsesoftware.com.
 
-The manual way (if you really want it)
-======================================
-
-Construct a webroot
--------------------
-
-    webroot
-    |-lib
-    |-controllers
-    |-models
-    |-views
-    |-config
-    |-[images]
-    |-[css]
-    |-[js]
-    |-<etc. - however you normally structure your webroots>
-
-Clone the pails repository
---------------------------
-
-If you're using git for your project, clone pails as a *submodule*, executing
-the following commands from your webroot:
-
-    git submodule init
-    git submodule add https://github.com/bparks/pails.git lib/pails
-
-Otherwise, just clone the repo into [webroot]/lib/pails
-
-Copy the necessary config files where they need to go
------------------------------------------------------
-
-From the webroot:
-
-    cp -r lib/pails/example/* .
-
-Verify that .htaccess and config/application.php.default exist
-
-Clone php-activerecord into the lib directory
----------------------------------------------
-
-pails uses php-activerecord for persistence. This makes data access trivial.
-
-    git clone https://github.com/jpfuentes2/php-activerecord.git lib/php-activerecord
-
-Configure your app
-------------------
-
-Move config/application.php.example to config/application.php and change
-values as necessary.
-
-
 [blog]: http://bparks.github.io/
 [gplv3]: http://www.gnu.org/licenses/gpl-3.0.html
-[dreammaker]: http://dreams.thoughtcolony.com/
-[frbbq]: http://frbbq.com/
-[mailover]: http://mailover.synapsesoftware.com/
+[synapse]: http://synapsesoftware.com
+[test_plugin]: https://github.com/bparks/pails-test-plugin
+[pails-plugins]: https://github.com/bparks/pails-plugins
