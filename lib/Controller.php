@@ -50,15 +50,13 @@ class Controller
 		}
 
 		header('HTTP/1.1 404 File Not Found');
-		echo 'Missing controller: ' . $path . '.';
-		echo 'The view ' . $path . ' does not exist.';
+		echo 'The ' . $type . ' ' . $path . ' does not exist.';
 		exit();
 	}
 	
 	public function render_page()
 	{
 		$this->view_path = self::get_path_for('view', $this->view, $this->plugin_paths);
-		Application::log($this->view_path);
 
 		//Finally, include the layout view, which should render everything
 		if ($this->layout !== false && file_exists($this->layout))

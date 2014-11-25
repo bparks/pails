@@ -138,18 +138,21 @@ class Application
 		$controller->plugin_paths = $this->plugin_order;
 		$action_result = null;
 
+		$functions = array();
+		$has_call_method = false;
 		// Use reflection class to extract valid methods strictly on the controller
 		$reflection_class = new \ReflectionClass($controller);
 		$class_methods = $reflection_class->getMethods(\ReflectionMethod::IS_PUBLIC);
-		$functions = array();
 		foreach($class_methods as $function)
 		{
 			if ($function->class === get_class($controller)) // no superclass methods
 				$functions[] = $function->name;
+			if ($function->name == "__call")
+				$has_call_method = true;
 		}
 
 		//Perform the requested action
-		if (in_array($request->action, $functions))
+		if ($has_call_method || in_array($request->action, $functions))
 		{
 			//Handle before actions
 			if (isset($controller->before_actions))
