@@ -112,7 +112,7 @@ class Application
 			return; //Assume that, if the plugin is loaded, its deps are, too
 		foreach ($this->plugins[$name]->deps as $pname)
 		{
-			load_plugin($pname);
+			$this->load_plugin($pname);
 		}
 		require_once('lib/'.$name.'/'.$this->plugins[$name]->index);
 		$this->plugin_order[] = $name;
@@ -131,7 +131,7 @@ class Application
 	public function run()
 	{
 		$request = $this->requestForUri($_SERVER['REQUEST_URI']);
-		$controller = Controller::getInstance($request->controller_name);
+		$controller = Controller::getInstance($request->controller_name, $this->plugin_order);
 
 		// This is where I stopped refactoring
 		$controller->view = $request->controller.'/'.$request->action;

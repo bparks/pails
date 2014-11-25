@@ -8,21 +8,16 @@ class Controller
 	public $model;
 	public $layout;
 
-	public static function getInstance($controller_name)
+	public static function getInstance($controller_name, $plugin_order)
 	{
-		if (!file_exists('controllers/'.$controller_name.'.php'))
-		{
-			header('HTTP/1.1 500 Internal Server Error');
-			echo 'Missing controller: ' . $controller_name . '.';
-			exit();
-		}
+		$controller_path = self::get_path_for_controller($controller_name, $plugin_order);
 
 		if (file_exists('controllers/ControllerBase.php'))
 		{
 			include 'controllers/ControllerBase.php';
 		}
 
-		include 'controllers/'.$controller_name.'.php';
+		include $controller_path;
 		$controller = new $controller_name();
 
 		//Check to ensure controller inherits from Pails\Controller
@@ -37,6 +32,24 @@ class Controller
 		$controller->layout = 'views/_layout.php';
 
 		return $controller;
+	}
+
+	private static function get_path_for_controller($controller_name, $plugin_order)
+	{
+		$base = 'controllers/'.$controller_name.'.php';
+		if (file_exists($base))
+			return $base;
+
+		$directories = array_reverse($plugin_order);
+
+		foreach ($directories as $dir) {
+			if (file_exists('lib/'.$dir.'/'.$base))
+				return 'lib/'.$dir.'/'.$base;
+		}
+
+		header('HTTP/1.1 500 Internal Server Error');
+		echo 'Missing controller: ' . $controller_name . '.';
+		exit();
 	}
 	
 	public function render_page()
