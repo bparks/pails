@@ -23,15 +23,6 @@ $application = new Pails\Application(array(
 	'unsafe_mode' => isset($UNSAFE_MODE) ? $UNSAFE_MODE : false
 ));
 
-/* --- php-activerecord setup --- */
-// TODO: Move this to php-activerecord's pails plugin
-// if (file_exists('lib/php-activerecord/ActiveRecord.php'))
-// {
-// 	require_once('lib/php-activerecord/ActiveRecord.php');
-// 	date_default_timezone_set('UTC');
-// }
-/* --- End php-activerecord setup --- */
-
 try
 {
 	$application->load_plugins();

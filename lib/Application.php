@@ -208,27 +208,6 @@ class Application
 			echo json_encode($action_result);
 		}
 	}
-	
-// TODO: Move this to php-activerecord's pails plugin
-	// private function initializeActiveRecord()
-	// {
-	// 	if (!file_exists('lib/php-activerecord/ActiveRecord.php')) return;
-
-	// 	if (!isset($this->connection_strings))
-	// 	{
-	// 		self::log('No connection strings set. Disabling php-activerecord support.');
-	// 	}
-	// 	else
-	// 	{
-	// 		\ActiveRecord\Config::initialize(function($cfg)
-	// 		{
-	// 			$cfg->set_model_directory('models');
-
-	// 			$cfg->set_connections($this->connection_strings);
-	// 			$cfg->set_default_connection(Application::environment());
-	// 		});
-	// 	}
-	// }
 
 	private function requestForUri($uri)
 	{
