@@ -45,6 +45,11 @@ class Application
 			$this->unsafe_mode = $args['unsafe_mode'];
 	}
 
+	public function connection_strings()
+	{
+		return $this->connection_strings;
+	}
+
 	public function load_plugins()
 	{
 		$this->plugins = array();
@@ -119,7 +124,7 @@ class Application
 		{
 			$funcname = $name.'_config';
 			if (function_exists($funcname))
-				$funcname();
+				$funcname($this);
 		}
 	}
 
