@@ -7,9 +7,6 @@ require_once(__DIR__.'/lib/Request.php');
 //Change directory to the webroot
 chdir($_SERVER['DOCUMENT_ROOT']);
 
-//Start a session
-session_start();
-
 if (!file_exists('config/application.php'))
 {
 	Pails\Application::log('ERROR: At a minimum, config/application.php is REQUIRED');
@@ -22,19 +19,31 @@ require_once('config/application.php'); //Library inclusion and setup
 $application = new Pails\Application(array(
 	'connection_strings' => $CONNECTION_STRINGS,
 	'routes' => $ROUTES,
-	'app_name' => $APP_NAME
+	'app_name' => $APP_NAME,
+	'unsafe_mode' => isset($UNSAFE_MODE) ? $UNSAFE_MODE : false
 ));
 
 /* --- php-activerecord setup --- */
-if (file_exists('lib/php-activerecord/ActiveRecord.php'))
-{
-	require_once('lib/php-activerecord/ActiveRecord.php');
-	date_default_timezone_set('UTC');
-}
+// TODO: Move this to php-activerecord's pails plugin
+// if (file_exists('lib/php-activerecord/ActiveRecord.php'))
+// {
+// 	require_once('lib/php-activerecord/ActiveRecord.php');
+// 	date_default_timezone_set('UTC');
+// }
 /* --- End php-activerecord setup --- */
 
 try
 {
+	$application->load_plugins();
+
+	//Start a session
+	//NOTE: This _needs_ to happen after all classes are loaded,
+	//      but (obviously) _before_ you might need the session.
+	session_start();
+
+	//Initialize the environments of any plugins that need to be initialized
+	$application->init_plugins();
+
 	$application->run();
 }
 catch (Exception $e)
