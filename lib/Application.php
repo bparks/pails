@@ -7,6 +7,9 @@ class Application
 	private $connection_strings;
 	private $routes;
 	private $app_name;
+	private $unsafe_mode;
+	private $plugins;
+	private $plugin_order;
 	private $yield;
 
 	private static $environment = '';
@@ -38,11 +41,90 @@ class Application
 			$this->routes = $args['routes'];
 		if (array_key_exists('app_name', $args))
 			$this->app_name = $args['app_name'];
+		if (array_key_exists('unsafe_mode', $args))
+			$this->unsafe_mode = $args['unsafe_mode'];
+	}
+
+	public function load_plugins()
+	{
+		$this->plugins = array();
+
+		if ($dir = opendir('lib'))
+		{
+			while (false !== ($entry = readdir($dir)))
+			{
+		        if (!is_dir('lib/'.$entry) || $entry == "pails")
+		        	continue; //Don't care about non-directories; avoid including pails again
+		        if ($entry == '.' || $entry == '..')
+		        	continue; //Really? This should be a no-brainer
+
+		        if (file_exists('lib/'.$entry.'/.pails'))
+		        {
+		        	//Is a *proper* pails module
+		        	$plugin_config = file_get_contents('lib/'.$entry.'/.pails');
+		        	$conf_obj = json_decode($plugin_config);
+		        	if ($conf_obj === null)
+		        	{
+		        		self::log("ERROR: lib/$entry has bad .pails file. Could not continue.");
+		        		exit();
+		        	}
+		        	else
+		        	{
+		        		$this->plugins[$entry] = $conf_obj;
+		        	}
+		        }
+		        else if (file_exists('lib/'.$entry.'/index.php'))
+		        {
+		        	//Is not a proper pails module, but we might be able to do something with it
+		        	if ($unsafe_mode)
+		        	{
+		        		$this->plugins[$entry] = (object)array(
+		        			'index' => 'index.php',
+		        			'deps' => array()
+		        		);
+		        	}
+		        	else
+		        		self::log("WARNING: lib/$entry is not a safe pails plugin and was not loaded. Enable unsafe mode or ensure this plugin has a .pails file");
+		        }
+		        else
+		        {
+		        	self::log("WARNING: lib/$entry is not a pails plugin and should be removed");
+		        }
+		    }
+		}
+
+		//TODO: Load in dependency order
+		$this->plugin_order = array();
+		foreach ($this->plugins as $name => $config)
+		{
+			$this->load_plugin($name);
+		}
+	}
+
+	private function load_plugin($name)
+	{
+		if (in_array($name, $this->plugin_order))
+			return; //Assume that, if the plugin is loaded, its deps are, too
+		foreach ($this->plugins[$name]->deps as $pname)
+		{
+			load_plugin($pname);
+		}
+		require_once('lib/'.$name.'/'.$this->plugins[$name]->index);
+		$this->plugin_order[] = $name;
+	}
+
+	public function init_plugins()
+	{
+		foreach ($this->plugin_order as $name)
+		{
+			$funcname = $name.'_config';
+			if (function_exists($funcname))
+				$funcname();
+		}
 	}
 
 	public function run()
 	{
-		$this->initializeActiveRecord();
 		$request = $this->requestForUri($_SERVER['REQUEST_URI']);
 		$controller = Controller::getInstance($request->controller_name);
 
@@ -124,26 +206,27 @@ class Application
 			echo json_encode($action_result);
 		}
 	}
+	
+// TODO: Move this to php-activerecord's pails plugin
+	// private function initializeActiveRecord()
+	// {
+	// 	if (!file_exists('lib/php-activerecord/ActiveRecord.php')) return;
 
-	private function initializeActiveRecord()
-	{
-		if (!file_exists('lib/php-activerecord/ActiveRecord.php')) return;
+	// 	if (!isset($this->connection_strings))
+	// 	{
+	// 		self::log('No connection strings set. Disabling php-activerecord support.');
+	// 	}
+	// 	else
+	// 	{
+	// 		\ActiveRecord\Config::initialize(function($cfg)
+	// 		{
+	// 			$cfg->set_model_directory('models');
 
-		if (!isset($this->connection_strings))
-		{
-			self::log('No connection strings set. Disabling php-activerecord support.');
-		}
-		else
-		{
-			\ActiveRecord\Config::initialize(function($cfg)
-			{
-				$cfg->set_model_directory('models');
-
-				$cfg->set_connections($this->connection_strings);
-				$cfg->set_default_connection(Application::environment());
-			});
-		}
-	}
+	// 			$cfg->set_connections($this->connection_strings);
+	// 			$cfg->set_default_connection(Application::environment());
+	// 		});
+	// 	}
+	// }
 
 	private function requestForUri($uri)
 	{
