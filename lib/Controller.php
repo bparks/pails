@@ -4,13 +4,15 @@ namespace Pails;
 
 class Controller
 {
+	public $plugin_paths;
 	public $view;
+	private $view_path;
 	public $model;
 	public $layout;
 
-	public static function getInstance($controller_name, $plugin_order)
+	public static function getInstance($controller_name, $plugin_paths)
 	{
-		$controller_path = self::get_path_for_controller($controller_name, $plugin_order);
+		$controller_path = self::get_path_for('controller', $controller_name, $plugin_paths);
 
 		if (file_exists('controllers/ControllerBase.php'))
 		{
@@ -34,26 +36,30 @@ class Controller
 		return $controller;
 	}
 
-	private static function get_path_for_controller($controller_name, $plugin_order)
+	private static function get_path_for($type, $path, $plugin_paths)
 	{
-		$base = 'controllers/'.$controller_name.'.php';
+		$base = $type.'s/'.$path.'.php';
 		if (file_exists($base))
 			return $base;
 
-		$directories = array_reverse($plugin_order);
+		$directories = array_reverse($plugin_paths);
 
 		foreach ($directories as $dir) {
 			if (file_exists('lib/'.$dir.'/'.$base))
 				return 'lib/'.$dir.'/'.$base;
 		}
 
-		header('HTTP/1.1 500 Internal Server Error');
-		echo 'Missing controller: ' . $controller_name . '.';
+		header('HTTP/1.1 404 File Not Found');
+		echo 'Missing controller: ' . $path . '.';
+		echo 'The view ' . $path . ' does not exist.';
 		exit();
 	}
 	
 	public function render_page()
 	{
+		$this->view_path = self::get_path_for('view', $this->view, $this->plugin_paths);
+		Application::log($this->view_path);
+
 		//Finally, include the layout view, which should render everything
 		if ($this->layout !== false && file_exists($this->layout))
 		{
@@ -67,7 +73,7 @@ class Controller
 
 	public function render()
 	{
-		include('views/'.$this->view.'.php');
+		include($this->view_path);
 	}
 
 	public function render_partial($path, $local_model = null)
@@ -77,6 +83,6 @@ class Controller
 		if ($local_model)
 			$model = $local_model;
 
-		include('views/'.$path.'.php');
+		include(self::get_path_for('view', $path, $this->plugin_paths));
 	}
 }

@@ -135,6 +135,7 @@ class Application
 
 		// This is where I stopped refactoring
 		$controller->view = $request->controller.'/'.$request->action;
+		$controller->plugin_paths = $this->plugin_order;
 		$action_result = null;
 
 		// Use reflection class to extract valid methods strictly on the controller
@@ -197,13 +198,6 @@ class Application
 
 		if ($controller->view)
 		{
-			if (!file_exists('views/'.$controller->view.'.php'))
-			{
-				header('HTTP/1.1 404 File Not Found');
-				echo 'The view ' . $controller->view . ' does not exist.';
-				exit();
-			}
-
 			$controller->render_page();
 		}
 		else
