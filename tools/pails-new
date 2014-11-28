@@ -9,7 +9,7 @@ APP_NAME_TC='Default'
 if [ $# -eq 1 ]; then
 	APP_DIR=$1
     APP_NAME=`echo $1 | awk '{print tolower($0)}'`
-    APP_NAME_TC=`echo $1 | awk '{printf("%s%s",toupper(substr($0,1,1)),substr($0,2))}'`
+    APP_NAME_TC=`echo $1 | awk -F_ '{ for(f = 1; f <= NF; f++){ printf("%s%s", toupper(substr($f,1,1)),substr($f,2)); } }'`
 fi
 
 echo "Creating new pails app in $APP_DIR"
