@@ -154,21 +154,7 @@ class Application
 		//Perform the requested action
 		if ($has_call_method || in_array($request->action, $functions))
 		{
-			//Handle before actions
-			if (isset($controller->before_actions))
-			{
-				foreach ($controller->before_actions as $key => $value)
-				{
-					if (is_int($key))
-					{
-						$key = $value;
-						unset($value);
-					}
-					if (isset($value) && isset($value['except']) && in_array($request->action, $value['except']))
-						continue;
-					$controller->$key();
-				}
-			}
+			$controller->do_before_actions($request);
 
 			$action_name = $request->action;
 			$opts = $request->raw_parts;
@@ -176,21 +162,7 @@ class Application
 			array_shift($opts);
 			$action_result = count($opts) ? $controller->$action_name($opts) : $controller->$action_name();
 
-			//Handle after actions
-			if (isset($controller->after_actions))
-			{
-				foreach ($controller->after_actions as $key => $value)
-				{
-					if (is_int($key))
-					{
-						$key = $value;
-						unset($value);
-					}
-					if (isset($value) && isset($value['except']) && in_array($request->action, $value['except']))
-						continue;
-					$controller->$key();
-				}
-			}
+			$controller->do_after_actions($request);
 		}
 		else
 		{

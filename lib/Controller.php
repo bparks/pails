@@ -83,4 +83,42 @@ class Controller
 
 		include(self::get_path_for('view', $path, $this->plugin_paths));
 	}
+
+	public function do_before_actions($request)
+	{
+		//Handle before actions
+		if (isset($this->before_actions))
+		{
+			foreach ($this->before_actions as $key => $value)
+			{
+				if (is_int($key))
+				{
+					$key = $value;
+					unset($value);
+				}
+				if (isset($value) && isset($value['except']) && in_array($request->action, $value['except']))
+					continue;
+				$this->$key();
+			}
+		}
+	}
+
+	public function do_after_actions($request)
+	{
+		//Handle after actions
+		if (isset($this->after_actions))
+		{
+			foreach ($this->after_actions as $key => $value)
+			{
+				if (is_int($key))
+				{
+					$key = $value;
+					unset($value);
+				}
+				if (isset($value) && isset($value['except']) && in_array($request->action, $value['except']))
+					continue;
+				$this->$key();
+			}
+		}
+	}
 }
