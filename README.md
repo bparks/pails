@@ -19,16 +19,20 @@ is probably faster.
 
 First, install pails:
 
-    git clone https://github.com/bparks/pails.git
-    cd pails && make install              # Note: if you don't have permissions to
-                                          # /usr/local/**/, you'll need to precede
-                                          # the installation command with 'sudo'
+```sh
+git clone https://github.com/bparks/pails.git
+cd pails && make install        # Note: if you don't have permissions to
+                                # /usr/local/**/, you'll need to precede
+                                # the installation command with 'sudo'
+```
 
 Then, run the pails command to build out a new tree for you:
 
-    pails new my_pails_app    # Creates a new app
-    cd my_pails_app
-    pails server    # Runs the PHP development server (requires PHP 5.4+)
+```sh
+pails new my_pails_app    # Creates a new app
+cd my_pails_app
+pails server    # Runs the PHP development server (requires PHP 5.4+)
+```
 
 Build an app!
 -------------
@@ -36,7 +40,9 @@ Build an app!
 Models go in /models and extend ActiveRecord\Model. If you're using models, you'll
 need the pails activerecord plugin:
 
-    pails install activerecord
+```sh
+pails install activerecord
+```
 
 Controllers go in /controllers with names like StuffController (case matters)
 and extend Pails\Controller.
@@ -62,17 +68,21 @@ Just like Rails, pails has before and after actions. Right now, they need to be
 public methods, which are configured as before or after actions with a class-level
 variable called `$before_actions` or `$after_actions`, like so:
 
-    $before_actions = array('require_login', 'require_admin');
+```php
+$before_actions = array('require_login', 'require_admin');
+```
 
 The referenced functions can't take any arguments.
 
 You can also exclude them from beign applicable to certain actions by making this
 array associative,  like so:
 
-    $before_actions = array(
-        'require_login',
-        'require_admin' => array('except' => array('index'))
-    );
+```php
+$before_actions = array(
+    'require_login',
+    'require_admin' => array('except' => array('index'))
+);
+```
 
 BE WARNED that in a future release, the way to do this properly will be to fiddle
 with these variables (or preferably to call a method by the same name, which doesn't
