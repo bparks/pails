@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="Pails : The lightest, most powerful, PHP MVC framework for rapid application development.">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Pails</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/bparks/pails">View on GitHub</a>
+
+          <h1 id="project_title">Pails</h1>
+          <h2 id="project_tagline">The lightest, most powerful, PHP MVC framework for rapid application development.</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/bparks/pails/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/bparks/pails/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>
+<a id="pails" class="anchor" href="#pails" aria-hidden="true"><span class="octicon octicon-link"></span></a>Pails</h1>
+
+<p>Pails is a seriously lightweight MVC framework written in PHP. The overarching
+vision is that less code is more powerful (and certainly gives rise to fewer
+bugs). <a href="http://bparks.github.io/">Read more on my blog</a></p>
+
+<p>Pails is licensed under the <a href="http://www.gnu.org/licenses/gpl-3.0.html">GPLv3</a>. If the GPL doesn't work for you,
+let's talk about your use case. If you need verification that this is free
+software (for your boss, CTO, etc.), that can also be arranged.</p>
+
+<p>Come talk about pails in #pails on Freenode.</p>
+
+<h2>
+<a id="building-a-site-with-pails" class="anchor" href="#building-a-site-with-pails" aria-hidden="true"><span class="octicon octicon-link"></span></a>Building a site with pails</h2>
+
+<p>You can build a pails app using some automated scripts OR manually. Using scripts
+is probably faster.</p>
+
+<p>First, install pails:</p>
+
+<pre><code>git clone https://github.com/bparks/pails.git
+cd pails &amp;&amp; make install              # Note: if you don't have permissions to
+                                      # /usr/local/**/, you'll need to precede
+                                      # the installation command with 'sudo'
+</code></pre>
+
+<p>Then, run the pails command to build out a new tree for you:</p>
+
+<pre><code>pails new my_pails_app    # Creates a new app
+cd my_pails_app
+pails server    # Runs the PHP development server (requires PHP 5.4+)
+</code></pre>
+
+<h2>
+<a id="build-an-app" class="anchor" href="#build-an-app" aria-hidden="true"><span class="octicon octicon-link"></span></a>Build an app!</h2>
+
+<p>Models go in /models and extend ActiveRecord\Model. If you're using models, you'll
+need the pails activerecord plugin:</p>
+
+<pre><code>pails install activerecord
+</code></pre>
+
+<p>Controllers go in /controllers with names like StuffController (case matters)
+and extend Pails\Controller.</p>
+
+<p>Views go in /views, in subfolders named by controller (all lowercase). Thus, a
+view for the 'index' action of StuffController would be views/stuff/index.php.</p>
+
+<p>Each <em>public</em> method in a Controller class is a valid action.</p>
+
+<h2>
+<a id="plugins" class="anchor" href="#plugins" aria-hidden="true"><span class="octicon octicon-link"></span></a>Plugins</h2>
+
+<p>We've been using Pails over at <a href="http://synapsesoftware.com">Synapse Software</a> for almost a year now,
+so we have a wealth of additional functionality we're packaging up as plugins. You
+too can build plugins and contribute them. Use this <a href="https://github.com/bparks/pails-test-plugin">test plugin</a> as
+an example. If you want your plugin to be listed in the directory, submit a pull
+request against the <a href="https://github.com/bparks/pails-plugins">pails-plugins</a> repository.</p>
+
+<h2>
+<a id="before-and-after-actions" class="anchor" href="#before-and-after-actions" aria-hidden="true"><span class="octicon octicon-link"></span></a>Before and after actions</h2>
+
+<p>Just like Rails, pails has before and after actions. Right now, they need to be
+public methods, which are configured as before or after actions with a class-level
+variable called <code>$before_actions</code> or <code>$after_actions</code>, like so:</p>
+
+<pre><code>$before_actions = array('require_login', 'require_admin');
+</code></pre>
+
+<p>The referenced functions can't take any arguments.</p>
+
+<p>You can also exclude them from beign applicable to certain actions by making this
+array associative,  like so:</p>
+
+<pre><code>$before_actions = array(
+    'require_login',
+    'require_admin' =&gt; array('except' =&gt; array('index'))
+);
+</code></pre>
+
+<p>BE WARNED that in a future release, the way to do this properly will be to fiddle
+with these variables (or preferably to call a method by the same name, which doesn't
+exist yet) inside the class's <code>__construct()</code> function. This eleminates the problem
+caused by inheritance of subclasses clobbering before and after actions that are set
+by superclasses.</p>
+
+<h2>
+<a id="questions" class="anchor" href="#questions" aria-hidden="true"><span class="octicon octicon-link"></span></a>Questions?</h2>
+
+<p>Send email to <a href="mailto:bparks@synapsesoftware.com">bparks@synapsesoftware.com</a>.</p>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Pails maintained by <a href="https://github.com/bparks">bparks</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
