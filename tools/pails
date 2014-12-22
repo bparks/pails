@@ -10,6 +10,7 @@ Pails control script v0.1
         update <name>    Update existing app given name
         server <name>    Start pails server given name
    add| install <plugin> Install a pails plugin from the repository
+        migration <...>  Create a new database migration
 
 -------------------------
 Shortcuts are supported
@@ -42,6 +43,9 @@ case $COMMAND in
         ;;
     'i'|'in'|'ins'|'inst'|'insta'|'instal'|'install'|'add')
         $TOOLS_DIR/pails-install $@
+        ;;
+    'migration')
+        $TOOLS_DIR/pails-migration $@
         ;;
     '-v'|'--ver'|'--version'|'version')
         cat $TOOLS_DIR/../VERSION
