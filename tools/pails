@@ -11,6 +11,7 @@ Pails control script v0.1
         server <name>    Start pails server given name
    add| install <plugin> Install a pails plugin from the repository
         migration <...>  Create a new database migration
+        migrate          Bring the database up to date
 
 -------------------------
 Shortcuts are supported
@@ -46,6 +47,9 @@ case $COMMAND in
         ;;
     'migration')
         $TOOLS_DIR/pails-migration $@
+        ;;
+    'migrate')
+        $TOOLS_DIR/pails-migrate $@ #arguments are ignored
         ;;
     '-v'|'--ver'|'--version'|'version')
         cat $TOOLS_DIR/../VERSION
