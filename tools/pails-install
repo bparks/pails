@@ -39,6 +39,13 @@ mkdir -p $APP_DIR/lib || exit 1
 PLUGIN_FILES=`ls /tmp/$PLUGIN_NAME | head -1`
 mv /tmp/$PLUGIN_NAME/$PLUGIN_FILES lib/$PLUGIN_NAME
 
+if [ -f lib/$PLUGIN_NAME/db/schema.sql ]; then
+	mkdir -p db/migrations || exit 1
+	cp lib/$PLUGIN_NAME/db/schema.sql db/migrations/$(date +%Y%m%d%H%M%S)_${PLUGIN_NAME}_schema.sql
+	echo "New migrations in db/migrations!"
+	echo "Run `pails migrate` to update your database"
+fi
+
 #Clean up
 rm -r /tmp/$PLUGIN_NAME
 rm -r /tmp/$PLUGIN_NAME.zip
