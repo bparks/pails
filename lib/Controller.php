@@ -98,6 +98,8 @@ class Controller
 				}
 				if (isset($value) && isset($value['except']) && in_array($request->action, $value['except']))
 					continue;
+				if (isset($value) && isset($value['only']) && !in_array($request->action, $value['only']))
+					continue;
 				$this->$key();
 			}
 		}
@@ -116,6 +118,8 @@ class Controller
 					unset($value);
 				}
 				if (isset($value) && isset($value['except']) && in_array($request->action, $value['except']))
+					continue;
+				if (isset($value) && isset($value['only']) && !in_array($request->action, $value['only']))
 					continue;
 				$this->$key();
 			}
