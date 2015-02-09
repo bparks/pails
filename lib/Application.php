@@ -11,6 +11,7 @@ class Application
 	private $plugins;
 	private $plugin_order;
 	private $yield;
+	private $routers;
 
 	private static $environment = '';
 
@@ -43,6 +44,8 @@ class Application
 			$this->app_name = $args['app_name'];
 		if (array_key_exists('unsafe_mode', $args))
 			$this->unsafe_mode = $args['unsafe_mode'];
+
+		$this->routers = array();
 	}
 
 	public function connection_strings()
@@ -171,6 +174,23 @@ class Application
 			exit();
 		}
 
+		if (is_int($action_result))
+		{
+			if ($action_result == 404)
+			{
+				header('HTTP/1.1 404 File Not Found');
+				echo 'The page ' . $_SERVER['REQUEST_URI'] . ' could not be found.';
+				exit();
+			}
+			else if ($action_result == 302)
+			{
+				header('HTTP/1.1 302 Found');
+				header('Location: ' . $controller->model);
+				echo 'The page has moved to ' . $controller->model;
+				exit();
+			}
+		}
+
 		if ($controller->view)
 		{
 			$controller->render_page();
@@ -181,30 +201,46 @@ class Application
 		}
 	}
 
+	public function registerRouter($func)
+	{
+		array_push($this->routers, $func);
+	}
+
 	private function requestForUri($uri)
 	{
-		$request = new Request();
-
 		$url = parse_url($_SERVER['REQUEST_URI']);
-		$request->raw_parts = explode('/', substr($url['path'], 1));
+		$request = null;
 
-		//First, find the appropriate controller
-		$current_route = $this->routes['*'];
-		if ($request->raw_parts[0] != '*' /* '*' is not a valid route */
-			&& array_key_exists($request->raw_parts[0], $this->routes))
-			$current_route = $this->routes[$request->raw_parts[0]];
+		foreach ($this->routers as $router) {
+			$req = $router($url['path']);
+			if (!$req) continue;
+			$request = $req;
+			break;
+		}
 
-		if ($current_route[0] === false)
-			$request->controller = $this->default_controller($request);
-		else
-			$request->controller = $current_route[0];
+		if ($request == null)
+		{
+			$request = new Request();
+			$request->raw_parts = explode('/', substr($url['path'], 1));
+
+			//First, find the appropriate controller
+			$current_route = $this->routes['*'];
+			if ($request->raw_parts[0] != '*' /* '*' is not a valid route */
+				&& array_key_exists($request->raw_parts[0], $this->routes))
+				$current_route = $this->routes[$request->raw_parts[0]];
+
+			if ($current_route[0] === false)
+				$request->controller = $this->default_controller($request);
+			else
+				$request->controller = $current_route[0];
+
+			if ($current_route[1] === false)
+				$request->action = $this->default_action($request);
+			else
+				$request->action = $current_route[1];
+		}
 
 		$request->controller_name = to_class_name($request->controller) . 'Controller';
-
-		if ($current_route[1] === false)
-			$request->action = $this->default_action($request);
-		else
-			$request->action = $current_route[1];
 
 		return $request;
 	}
