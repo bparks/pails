@@ -84,7 +84,7 @@ class Application
 		        else if (file_exists('lib/'.$entry.'/index.php'))
 		        {
 		        	//Is not a proper pails module, but we might be able to do something with it
-		        	if ($unsafe_mode)
+		        	if ($this->unsafe_mode)
 		        	{
 		        		$this->plugins[$entry] = (object)array(
 		        			'index' => 'index.php',
@@ -129,6 +129,11 @@ class Application
 			if (function_exists($funcname))
 				$funcname($this);
 		}
+	}
+
+	public function has_plugin ($name)
+	{
+		return in_array($name, $this->plugin_order);
 	}
 
 	public function run()
@@ -203,7 +208,7 @@ class Application
 
 	public function registerRouter($func)
 	{
-		array_push($this->routers, $func);
+		array_unshift($this->routers, $func);
 	}
 
 	private function requestForUri($uri)

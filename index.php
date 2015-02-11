@@ -14,12 +14,14 @@ if (!file_exists('config/application.php'))
 }
 
 /* Include some files */
-require_once('config/application.php'); //Library inclusion and setup
+// config/application.php is really not necessary UNLESS you use a database
+if (file_exists('config/application.php'))
+	require_once('config/application.php'); //Library inclusion and setup
 
 $application = new Pails\Application(array(
-	'connection_strings' => $CONNECTION_STRINGS,
-	'routes' => $ROUTES,
-	'app_name' => $APP_NAME,
+	'connection_strings' => isset($CONNECTION_STRINGS) ? $CONNECTION_STRINGS : array(),
+	'routes' => isset($ROUTES) ? $ROUTES : array('*' => array(false, false)),
+	'app_name' => isset($APP_NAME) ? $APP_NAME : 'default',
 	'unsafe_mode' => isset($UNSAFE_MODE) ? $UNSAFE_MODE : false
 ));
 
@@ -39,8 +41,15 @@ try
 }
 catch (Exception $e)
 {
-	header('HTTP/1.0 500 Internal Server Error');
-	echo '<pre>'.$e->getMessage()."\n\tat ".$e->getFile().':'.$e->getLine()."\n".$e->getTraceAsString().'</pre>';
+	if (is_a($e, 'ActiveRecord\DatabaseException') && $application->has_plugin('installer'))
+	{
+		header('Location: /install');
+	}
+	else
+	{
+		header('HTTP/1.0 500 Internal Server Error');
+		echo '<pre>'.$e->getMessage()."\n\tat ".$e->getFile().':'.$e->getLine()."\n".$e->getTraceAsString().'</pre>';
+	}
 }
 
 function to_class_name($string)
