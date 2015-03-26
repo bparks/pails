@@ -100,7 +100,11 @@ class Controller
 					continue;
 				if (isset($value) && isset($value['only']) && !in_array($request->action, $value['only']))
 					continue;
-				$this->$key();
+				
+				if (isset($value) && isset($value['options']))
+					$this->$key($value['options']);
+				else
+					$this->$key();
 			}
 		}
 	}
@@ -121,7 +125,11 @@ class Controller
 					continue;
 				if (isset($value) && isset($value['only']) && !in_array($request->action, $value['only']))
 					continue;
-				$this->$key();
+				
+				if (isset($value) && isset($value['options']))
+					$this->$key($value['options']);
+				else
+					$this->$key();
 			}
 		}
 	}
