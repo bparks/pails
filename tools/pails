@@ -8,7 +8,8 @@ Pails control script v0.1
     -v| --version        Show version of pails
    new| create <name>    Create a new pails application with given name
         update <name>    Update existing app given name
-        server <name>    Start pails server given name
+        server           Start pails server given name
+        console [<name>] Start a REPL with a pails environment (or run the named script)
    add| install <plugin> Install a pails plugin from the repository
         migration <...>  Create a new database migration
         migrate          Bring the database up to date
@@ -18,6 +19,7 @@ Shortcuts are supported
 n - new
 u - update
 s - server
+c - console
 i - install
 EOF
 exit 1
@@ -41,6 +43,9 @@ case $COMMAND in
         ;;
     's'|'se'|'ser'|'serv'|'serve'|'server')
         $TOOLS_DIR/pails-server $@
+        ;;
+    'c'|'co'|'con'|'cons'|'conso'|'consol'|'console')
+        $TOOLS_DIR/pails-console $@
         ;;
     'i'|'in'|'ins'|'inst'|'insta'|'instal'|'install'|'add')
         $TOOLS_DIR/pails-install $@
