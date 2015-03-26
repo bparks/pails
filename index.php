@@ -5,7 +5,10 @@ require_once(__DIR__.'/lib/Controller.php');
 require_once(__DIR__.'/lib/Request.php');
 
 //Change directory to the webroot
-chdir($_SERVER['DOCUMENT_ROOT']);
+if (isset($_SERVER['DOCUMENT_ROOT']) && $_SERVER['DOCUMENT_ROOT'] != '')
+	chdir($_SERVER['DOCUMENT_ROOT']);
+else
+	chdir(__DIR__.'/../../');
 
 if (!file_exists('config/application.php'))
 {
@@ -37,7 +40,12 @@ try
 	//Initialize the environments of any plugins that need to be initialized
 	$application->init_plugins();
 
-	$application->run();
+	if(php_sapi_name() != 'cli')
+		$application->run();
+	else if (isset($argv[1]))
+		include($argv[1]);
+	else
+		pails_repl();
 }
 catch (Exception $e)
 {
@@ -64,5 +72,27 @@ function to_table_name($string)
 	// underscored to lower-camelcase
 	// e.g. "this_method_name" -> "thisMethodName"
 	return preg_replace('/_(.?)/e',"strtoupper('$1')",$string);
+}
+
+function pails_repl()
+{
+	while (($line = readline("> ")) !== false)
+	{
+		readline_add_history($line);
+
+		if ($line === '')
+			continue;
+
+		if (substr($line, -1) !== ';')
+			$line .= ';';
+
+		try {
+			$result = eval("return ".$line);
+			echo "=> ".json_encode($result)."\n";
+		} catch (Exception $e) {
+			echo $e->getMessage();
+		}
+	}
+	if ($line === false) echo "\n";
 }
 ?>
