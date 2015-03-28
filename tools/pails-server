@@ -9,4 +9,9 @@ if [ $PHP_MAJOR -lt 5 ] || ([ $PHP_MAJOR -eq 5 ] && [ $PHP_MINOR -lt 4 ]) ; then
 	exit 1
 fi
 
-php -S localhost:8000 lib/pails/router.php
+IP=127.0.0.1
+if [ $# -gt 0 -a "$1" = "--all" ]; then
+    IP=0.0.0.0
+fi
+
+php -S $IP:8000 lib/pails/router.php
