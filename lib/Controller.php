@@ -140,6 +140,11 @@ class Controller
 		}
 	}
 
+	protected function csrf_hidden_field()
+	{
+		return "<input type=\"hidden\" name=\"csrf-token\" value=\"".$this->csrf_token()."\" />";
+	}
+
 	protected function csrf_token()
 	{
 		$tok = hash('sha512', $_SERVER['REQUEST_URI'].':'.date('U'));
