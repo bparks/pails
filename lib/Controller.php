@@ -26,7 +26,10 @@ class Controller
 		if (!is_subclass_of($controller, 'Pails\Controller'))
 		{
 			header('HTTP/1.1 500 Internal Server Error');
-			echo 'The controller ' . $controller_name . ' does not extend Pails\Controller.';
+			if (Application::environment() == 'production')
+				echo 'Sorry, something went wrong';
+			else
+				echo 'The controller ' . $controller_name . ' does not extend Pails\Controller.';
 			exit();
 		}
 
@@ -50,7 +53,10 @@ class Controller
 		}
 
 		header('HTTP/1.1 404 File Not Found');
-		echo 'The ' . $type . ' ' . $path . ' does not exist.';
+		if (Application::environment() == 'production')
+			echo "Sorry, there's nothing here. It's possible something went wrong, or it's possible that this URL doesn't exist. Please go back and try again.";
+		else
+			echo 'The ' . $type . ' ' . $path . ' does not exist.';
 		exit();
 	}
 	
@@ -132,5 +138,24 @@ class Controller
 					$this->$key();
 			}
 		}
+	}
+
+	protected function csrf_token()
+	{
+		$tok = hash('sha512', $_SERVER['REQUEST_URI'].':'.date('U'));
+		$_SESSION['csrf-token'] = $tok;
+		$_SESSION['csrf-referrer'] = $_SERVER['REQUEST_URI'];
+		return $tok;
+	}
+
+	protected function verify_csrf()
+	{
+		if (!isset($_SESSION['csrf-token']) || $_SESSION['csrf-token'] == '')
+			return false;
+
+		if (!isset($_POST['csrf-token']) || $_POST['csrf-token'] == '')
+			return false;
+
+		return $_POST['csrf-token'] === $_SESSION['csrf-token'];
 	}
 }
