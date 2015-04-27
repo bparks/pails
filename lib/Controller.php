@@ -163,4 +163,30 @@ class Controller
 
 		return $_POST['csrf-token'] === $_SESSION['csrf-token'];
 	}
+
+	public function is_https()
+	{
+		return (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS']) ||
+			   (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https');
+	}
+
+	public function require_https()
+	{
+		if (\Pails\Application::environment() != 'production')
+			return; //We don't care in development
+
+		if (!$this->is_https())
+		{
+			if ($_SERVER['REQUEST_METHOD'] == 'GET')
+			{
+				header('Location: https://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']);
+				exit;
+			}
+			else
+			{
+				header('Location: https://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'], true, 307);
+				exit;
+			}
+		}
+	}
 }
