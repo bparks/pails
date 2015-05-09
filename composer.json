@@ -1,0 +1,24 @@
+{
+    "name": "pails/pails",
+    "type": "library",
+    "description": "The lightest, most powerful PHP MVC framework for rapid application development",
+    "keywords": ["mvc","application","framework"],
+    "homepage": "http://github.com/bparks/pails",
+    "license": "GPLv3",
+    "authors": [
+        {
+            "name": "Brian Parks",
+            "email": "bparks@synapsesoftware.com",
+            "homepage": "http://brianparks.me",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=5.4.0"
+    },
+    "autoload": {
+        "psr-0": {
+            "Pails": "lib"
+        }
+    }
+}
