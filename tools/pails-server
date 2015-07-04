@@ -14,4 +14,11 @@ if [ $# -gt 0 -a "$1" = "--all" ]; then
     IP=0.0.0.0
 fi
 
-php -S $IP:8000 lib/pails/router.php
+if [ -f vendor/pails/pails/router.php ]; then
+	php -S $IP:8000 vendor/pails/pails/router.php
+elif [ -f lib/pails/router.php ]; then
+	php -S $IP:8000 lib/pails/router.php
+else
+	echo 'This is not a pails app!!'
+	exit 1
+fi
