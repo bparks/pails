@@ -8,8 +8,7 @@ class Application
 	private $routes;
 	private $app_name;
 	private $unsafe_mode;
-	private $plugins;
-	private $plugin_order;
+	private $areas;
 	private $yield;
 	private $routers;
 
@@ -53,97 +52,46 @@ class Application
 		return $this->connection_strings;
 	}
 
-	public function load_plugins()
+	public function load_areas()
 	{
-		$this->plugins = array();
+		//This actually has become an "Area"-loading function since
+		//dependencies should be managed by composer
+		$this->areas = array();
 
-		if ($dir = opendir('lib'))
+		$this->each_directory('vendor', function ($path)
 		{
-			while (false !== ($entry = readdir($dir)))
+			$this->each_directory($path, function ($item)
 			{
-		        if (!is_dir('lib/'.$entry) || $entry == "pails")
-		        	continue; //Don't care about non-directories; avoid including pails again
-		        if ($entry == '.' || $entry == '..')
-		        	continue; //Really? This should be a no-brainer
-
-		        if (file_exists('lib/'.$entry.'/.pails'))
-		        {
-		        	//Is a *proper* pails module
-		        	$plugin_config = file_get_contents('lib/'.$entry.'/.pails');
-		        	$conf_obj = json_decode($plugin_config);
-		        	if ($conf_obj === null)
-		        	{
-		        		self::log("ERROR: lib/$entry has bad .pails file. Could not continue.");
-		        		exit();
-		        	}
-		        	else
-		        	{
-		        		$this->plugins[$entry] = $conf_obj;
-		        	}
-		        }
-		        else if (file_exists('lib/'.$entry.'/index.php'))
-		        {
-		        	//Is not a proper pails module, but we might be able to do something with it
-		        	if ($this->unsafe_mode)
-		        	{
-		        		$this->plugins[$entry] = (object)array(
-		        			'index' => 'index.php',
-		        			'deps' => array()
-		        		);
-		        	}
-		        	else
-		        		self::log("WARNING: lib/$entry is not a safe pails plugin and was not loaded. Enable unsafe mode or ensure this plugin has a .pails file");
-		        }
-		        else
-		        {
-		        	self::log("WARNING: lib/$entry is not a pails plugin and should be removed");
-		        }
-		    }
-		}
-
-		//TODO: Load in dependency order
-		$this->plugin_order = array();
-		foreach ($this->plugins as $name => $config)
-		{
-			$this->load_plugin($name);
-		}
+		        if ((file_exists($item.'/models') && is_dir($item.'/models')) ||
+		        	(file_exists($item.'/views') && is_dir($item.'/views')) ||
+		        	(file_exists($item.'/controllers') && is_dir($item.'/controllers')))
+		        	$this->areas[] = $item;
+			});
+		});
 	}
 
-	private function load_plugin($name)
+	public function initialize()
 	{
-		if (in_array($name, $this->plugin_order))
-			return; //Assume that, if the plugin is loaded, its deps are, too
-		foreach ($this->plugins[$name]->deps as $pname)
+		$this->each_file('initializers', function ($item)
 		{
-			$this->load_plugin($pname);
-		}
-		require_once('lib/'.$name.'/'.$this->plugins[$name]->index);
-		$this->plugin_order[] = $name;
-	}
-
-	public function init_plugins()
-	{
-		foreach ($this->plugin_order as $name)
-		{
-			$funcname = $name.'_config';
-			if (function_exists($funcname))
-				$funcname($this);
-		}
-	}
-
-	public function has_plugin ($name)
-	{
-		return in_array($name, $this->plugin_order);
+			if (preg_match('/.php$/i', $item))
+			{
+				$initializer = function ($app) use ($item)
+				{
+					include($item);
+				};
+				$initializer($this);
+			}
+		});
 	}
 
 	public function run()
 	{
 		$request = $this->requestForUri($_SERVER['REQUEST_URI']);
-		$controller = Controller::getInstance($request->controller_name, $this->plugin_order);
+		$controller = Controller::getInstance($request->controller_name, $this->areas);
 
 		// This is where I stopped refactoring
 		$controller->view = $request->controller.'/'.$request->action;
-		$controller->plugin_paths = $this->plugin_order;
 		$action_result = null;
 
 		$functions = array();
@@ -209,6 +157,40 @@ class Application
 	public function registerRouter($func)
 	{
 		array_unshift($this->routers, $func);
+	}
+
+	private function each_file($path, $func)
+	{
+		if ($dir = opendir($path))
+		{
+			while (false !== ($entry = readdir($dir)))
+			{
+		        $item = $path.'/'.$entry;
+
+		        if (!is_file($item))
+		        	continue; //Don't care about non-directories
+
+		        $func($item);
+		    }
+		}
+	}
+
+	private function each_directory($path, $func)
+	{
+		if ($dir = opendir($path))
+		{
+			while (false !== ($entry = readdir($dir)))
+			{
+		        $item = $path.'/'.$entry;
+
+		        if (!is_dir($item))
+		        	continue; //Don't care about non-directories
+		        if ($entry == '.' || $entry == '..')
+		        	continue; //Really? This should be a no-brainer
+
+		        $func($item);
+		    }
+		}
 	}
 
 	private function requestForUri($uri)

@@ -17,4 +17,4 @@ if (!($url['path'] == '/') && file_exists('.' . $url['path'])) {
   // Serve the requested resource as-is.
   return FALSE;
 }
-include 'lib/pails/index.php';
+include __DIR__.'/index.php';

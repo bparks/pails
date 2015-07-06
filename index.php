@@ -10,16 +10,21 @@ if (isset($_SERVER['DOCUMENT_ROOT']) && $_SERVER['DOCUMENT_ROOT'] != '')
 else
 	chdir(__DIR__.'/../../');
 
-if (!file_exists('config/application.php'))
-{
-	Pails\Application::log('ERROR: At a minimum, config/application.php is REQUIRED');
-	exit();
-}
-
 /* Include some files */
 // config/application.php is really not necessary UNLESS you use a database
 if (file_exists('config/application.php'))
 	require_once('config/application.php'); //Library inclusion and setup
+else
+	Pails\Application::log('WARNING: There is no config/application.php in this project.');
+
+//Set the default time zone
+if (isset($TIME_ZONE) || trim($TIME_ZONE) == '')
+	$TIME_ZONE = 'UTC';
+date_default_timezone_set($TIME_ZONE);
+
+//If we're using composer for anything, include that now
+if (file_exists('vendor/autoload.php'))
+	require_once('vendor/autoload.php');
 
 $application = new Pails\Application(array(
 	'connection_strings' => isset($CONNECTION_STRINGS) ? $CONNECTION_STRINGS : array(),
@@ -30,15 +35,13 @@ $application = new Pails\Application(array(
 
 try
 {
-	$application->load_plugins();
+	$application->initialize();
+	$application->load_areas();
 
 	//Start a session
 	//NOTE: This _needs_ to happen after all classes are loaded,
 	//      but (obviously) _before_ you might need the session.
 	session_start();
-
-	//Initialize the environments of any plugins that need to be initialized
-	$application->init_plugins();
 
 	if(php_sapi_name() != 'cli')
 		$application->run();
@@ -49,14 +52,16 @@ try
 }
 catch (Exception $e)
 {
-	if (is_a($e, 'ActiveRecord\DatabaseException') && $application->has_plugin('installer'))
+	$long_message = $e->getMessage()."\nat ".$e->getFile().':'.$e->getLine()."\n".$e->getTraceAsString();
+	Pails\Application::log($long_message);
+	if (is_a($e, 'ActiveRecord\DatabaseException') && file_exists('vendor/pails/installer') && $_SERVER['REQUEST_URI'] != '/install')
 	{
 		header('Location: /install');
 	}
 	else
 	{
 		header('HTTP/1.0 500 Internal Server Error');
-		echo '<pre>'.$e->getMessage()."\n\tat ".$e->getFile().':'.$e->getLine()."\n".$e->getTraceAsString().'</pre>';
+		echo '<pre>'.$long_message.'</pre>';
 	}
 }
 
