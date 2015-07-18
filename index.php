@@ -3,6 +3,7 @@
 require_once(__DIR__.'/lib/Application.php');
 require_once(__DIR__.'/lib/Controller.php');
 require_once(__DIR__.'/lib/Request.php');
+require_once(__DIR__.'/lib/Utilities.php');
 
 //Change directory to the webroot
 if (isset($_SERVER['DOCUMENT_ROOT']) && $_SERVER['DOCUMENT_ROOT'] != '')
@@ -63,20 +64,6 @@ catch (Exception $e)
 		header('HTTP/1.0 500 Internal Server Error');
 		echo '<pre>'.$long_message.'</pre>';
 	}
-}
-
-function to_class_name($string)
-{
-	// underscored to upper-camelcase
-	// e.g. "this_method_name" -> "ThisMethodName"
-	return preg_replace('/(?:^|_)(.?)/e',"strtoupper('$1')",$string);
-}
-
-function to_table_name($string)
-{
-	// underscored to lower-camelcase
-	// e.g. "this_method_name" -> "thisMethodName"
-	return preg_replace('/_(.?)/e',"strtoupper('$1')",$string);
 }
 
 function pails_repl()

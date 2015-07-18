@@ -193,9 +193,12 @@ class Application
 		}
 	}
 
-	private function requestForUri($uri)
+	public function requestForUri($uri, $routes = null)
 	{
-		$url = parse_url($_SERVER['REQUEST_URI']);
+		if ($routes == null)
+			$routes = $this->routes;
+
+		$url = parse_url($uri);
 		$request = null;
 
 		foreach ($this->routers as $router) {
@@ -207,40 +210,55 @@ class Application
 
 		if ($request == null)
 		{
-			$request = new Request();
-			$request->raw_parts = explode('/', substr($url['path'], 1));
+			$raw_parts = explode('/', substr($url['path'], 1));
 
 			//First, find the appropriate controller
-			$current_route = $this->routes['*'];
-			if ($request->raw_parts[0] != '*' /* '*' is not a valid route */
-				&& array_key_exists($request->raw_parts[0], $this->routes))
-				$current_route = $this->routes[$request->raw_parts[0]];
 
-			if ($current_route[0] === false)
-				$request->controller = $this->default_controller($request);
-			else
-				$request->controller = $current_route[0];
+			//if a default is specified, start with it
+			$current_route = null;
+			if (array_key_exists('*', $routes))
+				$current_route = $routes['*'];
+			if ($raw_parts[0] != '*' /* '*' is not a valid route */
+				&& array_key_exists($raw_parts[0], $routes))
+				$current_route = $routes[$raw_parts[0]];
 
-			if ($current_route[1] === false)
-				$request->action = $this->default_action($request);
+			if ($current_route == null)
+			{
+				return null;
+			}
+			if (is_array($current_route) && is_string(key($current_route)))
+			{
+				$request = $this->requestForUri('/'.implode('/', array_slice($raw_parts, 1)), $current_route);
+			}
 			else
-				$request->action = $current_route[1];
+			{
+				$request = new Request();
+
+				if ($current_route[0] === false)
+					$request->controller = $this->default_controller($request, $raw_parts);
+				else
+					$request->controller = $current_route[0];
+
+				if ($current_route[1] === false)
+					$request->action = $this->default_action($request, $raw_parts);
+				else
+					$request->action = $current_route[1];
+			}
 		}
 
-		$request->controller_name = to_class_name($request->controller) . 'Controller';
+		$request->raw_parts = $raw_parts;
+		$request->controller_name = Utilities::toClassName($request->controller) . 'Controller';
 
 		return $request;
 	}
 
-	private function default_controller($request)
+	private function default_controller($request, $uri_parts)
 	{
-		$uri_parts = $request->raw_parts;
 		return strlen($uri_parts[0]) > 0 ? $uri_parts[0] : $this->app_name;
 	}
 
-	private function default_action($request)
+	private function default_action($request, $uri_parts)
 	{
-		$uri_parts = $request->raw_parts;
 		return count($uri_parts) > 1 && $uri_parts[1] != '' ? $uri_parts[1] : 'index';
 	}
 }
