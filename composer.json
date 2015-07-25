@@ -20,5 +20,8 @@
         "psr-0": {
             "Pails": "lib"
         }
+    },
+    "require-dev": {
+        "phpspec/prophecy": "^1.4"
     }
 }

@@ -4,15 +4,15 @@ namespace Pails;
 
 class Controller
 {
-	public $plugin_paths;
+	public $areas;
 	public $view;
 	private $view_path;
 	public $model;
 	public $layout;
 
-	public static function getInstance($controller_name, $plugin_paths)
+	public static function getInstance($controller_name, $areas)
 	{
-		$controller_path = self::get_path_for('controller', $controller_name, $plugin_paths);
+		$controller_path = self::get_path_for('controller', $controller_name, $areas);
 
 		if (file_exists('controllers/ControllerBase.php'))
 		{
@@ -35,21 +35,22 @@ class Controller
 
 		//Initialize stuff
 		$controller->layout = 'views/_layout.php';
+		$controller->areas = $areas;
 
 		return $controller;
 	}
 
-	private static function get_path_for($type, $path, $plugin_paths)
+	private static function get_path_for($type, $path, $areas)
 	{
 		$base = $type.'s/'.$path.'.php';
 		if (file_exists($base))
 			return $base;
 
-		$directories = array_reverse($plugin_paths);
+		$directories = array_reverse($areas);
 
 		foreach ($directories as $dir) {
-			if (file_exists('lib/'.$dir.'/'.$base))
-				return 'lib/'.$dir.'/'.$base;
+			if (file_exists($dir.'/'.$base))
+				return $dir.'/'.$base;
 		}
 
 		header('HTTP/1.1 404 File Not Found');
@@ -62,7 +63,7 @@ class Controller
 	
 	public function render_page()
 	{
-		$this->view_path = self::get_path_for('view', $this->view, $this->plugin_paths);
+		$this->view_path = self::get_path_for('view', $this->view, $this->areas);
 
 		//Finally, include the layout view, which should render everything
 		if ($this->layout !== false && file_exists($this->layout))
@@ -87,7 +88,7 @@ class Controller
 		if ($local_model)
 			$model = $local_model;
 
-		include(self::get_path_for('view', $path, $this->plugin_paths));
+		include(self::get_path_for('view', $path, $this->areas));
 	}
 
 	public function do_before_actions($request)

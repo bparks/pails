@@ -9,9 +9,9 @@ if [ ! -e config/application.php ]; then
   exit 1
 fi
 
-if [ ! -e lib/activerecord ]; then
-  echo "pails-activerecord is required. Install it by running"
-  echo "    pails install activerecord"
+if [ ! -e vendor/php-activerecord/php-activerecord ]; then
+  echo "php-activerecord is required. Install it by running"
+  echo "    composer require php-activerecord/php-activerecord"
   echo "However, if you're not using activerecord, you likely don't have any"
   echo "migrations to be run"
   exit 1
@@ -26,7 +26,8 @@ fi
 php <<EOT
 <?php
 include('config/application.php');
-include('lib/activerecord/ActiveRecord.php');
+include('vendor/autoload.php');
+date_default_timezone_set('UTC');
 class MigrationHistory extends ActiveRecord\\Model {}
 ActiveRecord\\Config::initialize(function(\$cfg) use (\$CONNECTION_STRINGS)
 {
@@ -53,7 +54,8 @@ for file in db/migrations/*.sql ; do
   MIGRATED_DATE=$(php <<EOT
 <?php
   include('config/application.php');
-  include('lib/activerecord/ActiveRecord.php');
+  include('vendor/autoload.php');
+  date_default_timezone_set('UTC');
   class MigrationHistory extends ActiveRecord\\Model {}
   ActiveRecord\Config::initialize(function(\$cfg) use (\$CONNECTION_STRINGS)
   {
@@ -77,7 +79,8 @@ EOT)
     php <<EOT
     <?php
     include('config/application.php');
-    include('lib/activerecord/ActiveRecord.php');
+    include('vendor/autoload.php');
+    date_default_timezone_set('UTC');
     class MigrationHistory extends ActiveRecord\\Model {}
     ActiveRecord\\Config::initialize(function(\$cfg) use (\$CONNECTION_STRINGS)
     {
