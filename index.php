@@ -9,7 +9,7 @@ require_once(__DIR__.'/lib/Utilities.php');
 if (isset($_SERVER['DOCUMENT_ROOT']) && $_SERVER['DOCUMENT_ROOT'] != '')
 	chdir($_SERVER['DOCUMENT_ROOT']);
 else
-	chdir(__DIR__.'/../../');
+	chdir(__DIR__.'/../../../');
 
 /* Include some files */
 // config/application.php is really not necessary UNLESS you use a database
@@ -19,7 +19,7 @@ else
 	Pails\Application::log('WARNING: There is no config/application.php in this project.');
 
 //Set the default time zone
-if (isset($TIME_ZONE) || trim($TIME_ZONE) == '')
+if (!isset($TIME_ZONE) || trim($TIME_ZONE) == '')
 	$TIME_ZONE = 'UTC';
 date_default_timezone_set($TIME_ZONE);
 

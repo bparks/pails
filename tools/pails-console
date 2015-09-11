@@ -1,3 +1,3 @@
 #!/bin/bash
 
-php lib/pails/index.php $@
+php vendor/pails/pails/index.php $@
