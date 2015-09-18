@@ -1,3 +1,0 @@
-#!/bin/bash
-
-php vendor/pails/pails/index.php $@
