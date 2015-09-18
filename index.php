@@ -5,18 +5,16 @@ require_once(__DIR__.'/lib/Controller.php');
 require_once(__DIR__.'/lib/Request.php');
 require_once(__DIR__.'/lib/Utilities.php');
 
-//Change directory to the webroot
-if (isset($_SERVER['DOCUMENT_ROOT']) && $_SERVER['DOCUMENT_ROOT'] != '')
-	chdir($_SERVER['DOCUMENT_ROOT']);
-else
+//If we're running as a web app, bring us to the root of the app
+if (isset($_SERVER['DOCUMENT_ROOT']) && $_SERVER['DOCUMENT_ROOT'] != '') {
+    chdir($_SERVER['DOCUMENT_ROOT'].'/../app');
+} else //Otherwise, bring us one directory above the 'scripts' directory
 	chdir(__DIR__.'/../../../');
 
 /* Include some files */
 // config/application.php is really not necessary UNLESS you use a database
 if (file_exists('config/application.php'))
 	require_once('config/application.php'); //Library inclusion and setup
-else
-	Pails\Application::log('WARNING: There is no config/application.php in this project.');
 
 //Set the default time zone
 if (!isset($TIME_ZONE) || trim($TIME_ZONE) == '')
@@ -24,8 +22,8 @@ if (!isset($TIME_ZONE) || trim($TIME_ZONE) == '')
 date_default_timezone_set($TIME_ZONE);
 
 //If we're using composer for anything, include that now
-if (file_exists('vendor/autoload.php'))
-	require_once('vendor/autoload.php');
+if (file_exists('../vendor/autoload.php'))
+	require_once('../vendor/autoload.php');
 
 $application = new Pails\Application(array(
 	'connection_strings' => isset($CONNECTION_STRINGS) ? $CONNECTION_STRINGS : array(),

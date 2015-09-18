@@ -58,7 +58,7 @@ class Application
 		//dependencies should be managed by composer
 		$this->areas = array();
 
-		$this->each_directory('vendor', function ($path)
+		$this->each_directory('../vendor', function ($path)
 		{
 			$this->each_directory($path, function ($item)
 			{
@@ -72,6 +72,8 @@ class Application
 
 	public function initialize()
 	{
+		if (!file_exists('initializers')) return;
+
 		$this->each_file('initializers', function ($item)
 		{
 			if (preg_match('/.php$/i', $item))
