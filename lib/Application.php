@@ -200,6 +200,7 @@ class Application
 
 		$url = parse_url($uri);
 		$request = null;
+		$raw_parts = explode('/', substr($url['path'], 1));
 
 		foreach ($this->routers as $router) {
 			$req = $router($url['path']);
@@ -210,8 +211,6 @@ class Application
 
 		if ($request == null)
 		{
-			$raw_parts = explode('/', substr($url['path'], 1));
-
 			//First, find the appropriate controller
 
 			//if a default is specified, start with it
