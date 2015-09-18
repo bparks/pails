@@ -42,6 +42,7 @@ class Controller
 
 	private static function get_path_for($type, $path, $areas)
 	{
+		$path = str_replace('\\', DIRECTORY_SEPARATOR, $path);
 		$base = $type.'s/'.$path.'.php';
 		if (file_exists($base))
 			return $base;
