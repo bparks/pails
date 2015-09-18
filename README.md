@@ -11,43 +11,68 @@ software (for your boss, CTO, etc.), that can also be arranged.
 
 Come talk about pails in #pails on Freenode.
 
+Upgrading a pails app from 0.3.x
+--------------------------------
+
+The organization of directories has changed a little bit, so that application
+logic goes in `app` and public files go in `public`. The quick solution is to
+run the following three commands in the root of your pails app:
+
+```sh
+mkdir app public
+mv config controllers helpers initializers models views app/
+mv css js images uploads robots.txt .htaccess public
+```
+
+Then you can update the pails composer package and your app will run *mostly*
+fine. Due to the change in paths, logic that expects to write to a web-accessible
+location should be verified/tested.
+
 Quick start
 -----------
 
-1. Install pails
-2. Initialize a new site
+1. Install pails from composer
+2. Set up your directories
 3. Configure your database
-4. Install plugins (and run any necessary migrations)
+4. Install plugins/packages
 5. Add your own layout
 6. (Optional) Add your own functionality, using the MVC pattern
 
-You can also download a pre-built "distribution", which is comprised of
-a pristine pails app and the plugins necessary to perform a specific
-purpose, such as a pre-built Content Management System. This means that
-steps 1, 2, and 4 are done for you and you only need to do steps 3, 5,
-and possibly 6. List coming soon.
+Note that there are a set of tools at https://github.com/bparks/pails-tools
+that will do step 2 (and set up some sample infrastructure) for you, so all
+you have to do is jump into the directory, run `composer install` and be up
+and running.
 
 Install pails
 -------------
 
-From a command prompt:
+Create a new directory for your project and run
 
 ```sh
-git clone https://github.com/bparks/pails.git
-cd pails && make install        # Note: if you don't have permissions to
-                                # /usr/local/**/, you'll need to precede
-                                # the installation command with 'sudo'
+composer require pails
 ```
 
-Initialize a new site
----------------------
+Set up your directories
+-----------------------
 
-From a command prompt:
+`pails-tools` will do this for you, but the typical pails app has the following
+structure:
 
-```sh
-pails new my_pails_app    # Creates a new app
-cd my_pails_app
-pails server    # Runs the PHP development server (requires PHP 5.4+)
+```text
+my_app
+|- app
+|  |- config
+|  |  |- application.php (database config)
+|  |- initializers
+|  |  |- _startup.php (initialize any packages)
+|  |- controllers
+|  |- models
+|  |- views
+|- public (this is your document root)
+|- vendor
+|- db (this contains migrations)
+|- scripts (any scripts that need the app's environment for e.g. cron)
+|- composer.json
 ```
 
 Configure your database
@@ -68,30 +93,15 @@ For most sites, this is the only file change that you absolutely have to make.
 Install plugins
 ---------------
 
-See additional information below for the nitty-gritty. The summary is that there
-are at least a few plugins that will help you do what you need to (see the
-[directory][pails-plugins]). To install a plugin, run the following command from
-a command line at the root of your web site:
-
-```sh
-pails install plugin_name
-```
-
-Many (but not all) plugins have models that they save to the database you have
-configured for your site. When you install a plugin, the sripts necessary to
-update your database get placed in `db/migrations/`. To apply these changes,
-run the following from a command prompt:
-
-```sh
-pails migrate
-```
+Pails uses composer. All packages will be autoloaded according to the autoload
+rules they specify in their `composer.json` files AUTOMATICALLY.
 
 Add your own layout
 -------------------
 
 Pails ships with a decent look and feel, but it's probably not what you want to
 stick with on your own web site. The default look and feel is defined in two
-files, `views/_layout.php` and `css/custom.css`, but only the first is required
+files, `app/views/_layout.php` and `public/css/custom.css`, but only the first is required
 (the CSS file is simply included to provide some sane defaults). You can replace
 the `_layout.php` with your own markup, as long as you include the following line
 *somewhere* in the file (this causes pails to render the current page's content):
@@ -104,7 +114,7 @@ Two technical notes:
 * You can override views provided by plugins. Simply create a file in your site's
   `views` directory with the same name as the view you'd like to override. For instance
   to override the form displayed by the `user/register.php` page provided by the
-  pails-auth plugin, I would create a file at `views/user/register.php` with the
+  pails-auth plugin, I would create a file at `app/views/user/register.php` with the
   desired content.
 * You can define "partial views" (commonly called "partials") that get included into
   other views. The markup is the same as for a view, but including them is accompilshed
@@ -123,32 +133,32 @@ pails is potentially infinitely extensible. The framework itself and all of the 
 follow the MVC pattern, which means that the following rules always hold true (they are
 the ONLY rules of pails, for the most part):
 
-Models go in /models and extend ActiveRecord\Model. If you're using models, you'll
-want the pails activerecord plugin:
+Models go in /models and tend to extend \ActiveRecord\Model. It's not required, but pails
+works really well with PHP-ActiveRecord, which you can get through composer:
 
 ```sh
-pails install activerecord
+composer require php-activerecord
 ```
 
 Controllers go in /controllers with names like StuffController (case matters)
-and extend Pails\Controller.
+and extend \Pails\Controller.
 
 Views go in /views, in subfolders named by controller (all lowercase). Thus, a
 view for the 'index' action of StuffController would be views/stuff/index.php.
 
 Each *public* method in a Controller class is a valid action.
 
-If you'd like to make some custom functionality available to the community, or
-package it up for use in future projects, you can create a [plugin][pails-plugins].
+Plugins
+-------
 
-Existing plugins
-----------------
+Initially, pails had it its own plugin system, but composer has largely supplanted
+that. The trend of how to use a composer package with pails is:
 
-We've been using Pails over at [Synapse Software][synapse] for almost a year now,
-so we have a wealth of additional functionality we're packaging up as plugins. You
-too can build plugins and contribute them. Use this [test plugin][test_plugin] as
-an example. If you want your plugin to be listed in the directory, submit a pull
-request against the [pails-plugins][pails-plugins] repository.
+1. Install the package from composer
+2. If required, initialize the package in `initializers/_startup.php` or your own
+   initializer (initializers are evaluated alphabetically; _startup MUST be first).
+3. Use the `use` keyword in application logic to include functionality, just like in
+   any other PHP app.
 
 Technical details
 =================
@@ -186,10 +196,7 @@ by superclasses.
 Questions?
 ==========
 
-Send email to bparks@synapsesoftware.com.
+Send email to bparks@brianparks.me.
 
-[blog]: http://bparks.github.io/
+[blog]: http://brianparks.me/blog/
 [gplv3]: http://www.gnu.org/licenses/gpl-3.0.html
-[synapse]: http://synapsesoftware.com
-[test_plugin]: https://github.com/bparks/pails-test-plugin
-[pails-plugins]: https://github.com/bparks/pails-plugins
