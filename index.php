@@ -8,8 +8,8 @@ require_once(__DIR__.'/lib/Utilities.php');
 //If we're running as a web app, bring us to the root of the app
 if (isset($_SERVER['DOCUMENT_ROOT']) && $_SERVER['DOCUMENT_ROOT'] != '') {
     chdir($_SERVER['DOCUMENT_ROOT'].'/../app');
-} else //Otherwise, bring us one directory above the 'scripts' directory
-	chdir(__DIR__.'/../../../');
+} else //Otherwise, bring us to the right 'app' directory
+	chdir(__DIR__.'/../../../app');
 
 /* Include some files */
 // config/application.php is really not necessary UNLESS you use a database
