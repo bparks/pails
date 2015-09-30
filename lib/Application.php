@@ -27,7 +27,7 @@ class Application
 
 	public static function log($obj)
 	{
-		if (self::environment() == 'production') return;
+		//if (self::environment() == 'production') return;
 		$stdout = fopen('php://stdout', 'w');
 	    fwrite($stdout, "LOGGING: ".print_r($obj, true)."\n");
 	    fclose($stdout);
