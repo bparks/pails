@@ -27,10 +27,16 @@ class Application
 
 	public static function log($obj)
 	{
-		//if (self::environment() == 'production') return;
-		$stdout = fopen('php://stdout', 'w');
+		if (self::environment() == 'development')
+		{
+			$stdout = fopen('php://stdout', 'w');
 	    fwrite($stdout, "LOGGING: ".print_r($obj, true)."\n");
 	    fclose($stdout);
+		}
+		else
+		{
+			error_log("Application::log(): ".print_r($obj, true));
+		}
 	}
 
 	public function __construct($args)
