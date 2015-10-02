@@ -2,6 +2,7 @@
 //Pull in the rest of the library
 require_once(__DIR__.'/lib/Application.php');
 require_once(__DIR__.'/lib/Controller.php');
+require_once(__DIR__.'/lib/ResourceController.php');
 require_once(__DIR__.'/lib/Request.php');
 require_once(__DIR__.'/lib/Utilities.php');
 
