@@ -21,7 +21,7 @@ class ResourceController extends Controller
 		if (isset($this->actions[$action])) {
 			$method_name = $actions[$action];
 		} elseif ($default_action != null) {
-			$method_name = $actions[$default_action];
+			$method_name = $actions[$this->default_action];
 		} else {
 			return 404;
 		}
