@@ -126,7 +126,7 @@ class Application
 			$action_result = count($opts) ? $controller->$action_name($opts) : $controller->$action_name();
 
 			$controller->do_after_actions($request->action);
-		} elseif (is_subclass_of($controller, ResourceController)) {
+		} elseif (is_subclass_of($controller, '\Pails\ResourceController')) {
 			$action_name = $request->action;
 			$opts = $request->raw_parts;
 			array_shift($opts);
