@@ -88,6 +88,7 @@ describe('A more advanced route definition', function () {
         expect($request->controller)->toBe('widgets_api');
         expect($request->controller_name)->toBe('WidgetsApiController');
         expect($request->action)->toBe('endpoint');
+		expect($request->opts)->toBe(array('widgets', 'endpoint'));
 	});
 
 	it ('can be very deeply nested', function () use ($app, $request) {
@@ -95,6 +96,7 @@ describe('A more advanced route definition', function () {
         expect($request->controller)->toBe('widgets_admin');
         expect($request->controller_name)->toBe('WidgetsAdminController');
         expect($request->action)->toBe('add');
+		expect($request->opts)->toBe(array('widgets', 'add'));
 	});
 
 	it ('can refer to classes in namespaces', function () use ($app, $request) {
@@ -102,6 +104,7 @@ describe('A more advanced route definition', function () {
         expect($request->controller)->toBe('api\v1\widgets');
         expect($request->controller_name)->toBe('Api\V1\WidgetsController');
         expect($request->action)->toBe('add');
+		expect($request->opts)->toBe(array('widgets', 'add'));
 	});
 
 	it ('can refer to classes in namespaces in a case insensitive way', function () use ($app, $request) {
@@ -109,5 +112,6 @@ describe('A more advanced route definition', function () {
         expect($request->controller)->toBe('Api\V1\Users');
         expect($request->controller_name)->toBe('Api\V1\UsersController');
         expect($request->action)->toBe('add');
+		expect($request->opts)->toBe(array('users', 'add'));
 	});
 });

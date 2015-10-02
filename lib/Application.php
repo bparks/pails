@@ -252,6 +252,7 @@ class Application
 			else
 			{
 				$request = new Request();
+				$request->opts = $opts;
 
 				if ($current_route[0] === false)
 					$request->controller = $this->default_controller($request, $raw_parts);
@@ -266,7 +267,6 @@ class Application
 		}
 
 		$request->raw_parts = $raw_parts;
-		$request->opts = $opts;
 		$request->controller_name = Utilities::toClassName($request->controller) . 'Controller';
 
 		return $request;
