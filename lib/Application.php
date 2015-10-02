@@ -266,6 +266,7 @@ class Application
 		}
 
 		$request->raw_parts = $raw_parts;
+		$request->opts = $opts;
 		$request->controller_name = Utilities::toClassName($request->controller) . 'Controller';
 
 		return $request;
