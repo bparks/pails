@@ -8,4 +8,5 @@ class Request
 	public $controller_name;
 	public $action;
 	public $raw_parts;
+	public $opts;
 }

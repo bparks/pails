@@ -120,7 +120,7 @@ class Application
 			$controller->do_before_actions($request->action);
 
 			$action_name = $request->action;
-			$opts = $request->raw_parts;
+			$opts = $request->opts;
 			array_shift($opts);
 			array_shift($opts);
 			$action_result = count($opts) ? $controller->$action_name($opts) : $controller->$action_name();
@@ -128,10 +128,10 @@ class Application
 			$controller->do_after_actions($request->action);
 		} elseif (is_subclass_of($controller, '\Pails\ResourceController')) {
 			$action_name = $request->action;
-			$opts = $request->raw_parts;
+			$opts = $request->opts;
 			array_shift($opts);
 			array_shift($opts);
-			$action_result = count($opts) ? $controller->$action_name($opts) : $controller->$action_name();
+			$action_result = $controller->$action_name($opts);
 		//} elseif ($has_call_method) {
 		//	//The call method is responsible for calling do_before_actions and do_after_actions
 		//	$action_name = $request->action;
@@ -219,6 +219,7 @@ class Application
 		$url = parse_url($uri);
 		$request = null;
 		$raw_parts = explode('/', substr($url['path'], 1));
+		$opts = $raw_parts;
 
 		foreach ($this->routers as $router) {
 			$req = $router($url['path']);
@@ -235,9 +236,9 @@ class Application
 			$current_route = null;
 			if (array_key_exists('*', $routes))
 				$current_route = $routes['*'];
-			if ($raw_parts[0] != '*' /* '*' is not a valid route */
-				&& array_key_exists($raw_parts[0], $routes))
-				$current_route = $routes[$raw_parts[0]];
+			if ($opts[0] != '*' /* '*' is not a valid route */
+				&& array_key_exists($opts[0], $routes))
+				$current_route = $routes[$opts[0]];
 
 			if ($current_route == null)
 			{
@@ -245,7 +246,8 @@ class Application
 			}
 			if (is_array($current_route) && is_string(key($current_route)))
 			{
-				$request = $this->requestForUri('/'.implode('/', array_slice($raw_parts, 1)), $current_route);
+				array_shift($opts);
+				$request = $this->requestForUri('/'.implode('/', $opts), $current_route);
 			}
 			else
 			{
