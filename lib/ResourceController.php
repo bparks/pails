@@ -17,18 +17,18 @@ class ResourceController extends Controller
         $opts = count($args) > 0 ? $args[0] : array('show');
         $action = array_shift($opts);
 
-		if (isset($this->actions[$action]))
-		{
+		$method_name = null;
+		if (isset($this->actions[$action])) {
 			$method_name = $actions[$action];
-			return $this->$method_name($name, $opts);
-		}
-
-		if ($default_action != null)
-		{
+		} elseif ($default_action != null) {
 			$method_name = $actions[$default_action];
-			return $this->$method_name($name, $opts);
+		} else {
+			return 404;
 		}
 
-        return 404;
+		$this->do_before_actions($action);
+		$ret = $this->$method_name($name, $opts);
+		$this->do_after_actions($action);
+		return $ret;
     }
 }

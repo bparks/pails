@@ -116,9 +116,8 @@ class Application
 		}
 
 		//Perform the requested action
-		if ($has_call_method || in_array($request->action, $functions))
-		{
-			$controller->do_before_actions($request);
+		if (in_array($request->action, $functions)) {
+			$controller->do_before_actions($request->action);
 
 			$action_name = $request->action;
 			$opts = $request->raw_parts;
@@ -126,10 +125,21 @@ class Application
 			array_shift($opts);
 			$action_result = count($opts) ? $controller->$action_name($opts) : $controller->$action_name();
 
-			$controller->do_after_actions($request);
-		}
-		else
-		{
+			$controller->do_after_actions($request->action);
+		} elseif (is_subclass_of($controller, ResourceController)) {
+			$action_name = $request->action;
+			$opts = $request->raw_parts;
+			array_shift($opts);
+			array_shift($opts);
+			$action_result = count($opts) ? $controller->$action_name($opts) : $controller->$action_name();
+		//} elseif ($has_call_method) {
+		//	//The call method is responsible for calling do_before_actions and do_after_actions
+		//	$action_name = $request->action;
+		//	$opts = $request->raw_parts;
+		//	array_shift($opts);
+		//	array_shift($opts);
+		//	$action_result = count($opts) ? $controller->$action_name($opts) : $controller->$action_name();
+		} else {
 			header('HTTP/1.1 404 File Not Found');
 			echo 'The controller ' . $request->controller_name . ' does not have a public method ' . $request->action . '.';
 			exit();

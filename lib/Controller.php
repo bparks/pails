@@ -61,7 +61,7 @@ class Controller
 			echo 'The ' . $type . ' ' . $path . ' does not exist.';
 		exit();
 	}
-	
+
 	public function render_page()
 	{
 		$this->view_path = self::get_path_for('view', $this->view, $this->areas);
@@ -92,7 +92,7 @@ class Controller
 		include(self::get_path_for('view', $path, $this->areas));
 	}
 
-	public function do_before_actions($request)
+	public function do_before_actions($action)
 	{
 		//Handle before actions
 		if (isset($this->before_actions))
@@ -104,11 +104,11 @@ class Controller
 					$key = $value;
 					unset($value);
 				}
-				if (isset($value) && isset($value['except']) && in_array($request->action, $value['except']))
+				if (isset($value) && isset($value['except']) && in_array($action, $value['except']))
 					continue;
-				if (isset($value) && isset($value['only']) && !in_array($request->action, $value['only']))
+				if (isset($value) && isset($value['only']) && !in_array($action, $value['only']))
 					continue;
-				
+
 				if (isset($value) && isset($value['options']))
 					$this->$key($value['options']);
 				else
@@ -117,7 +117,7 @@ class Controller
 		}
 	}
 
-	public function do_after_actions($request)
+	public function do_after_actions($action)
 	{
 		//Handle after actions
 		if (isset($this->after_actions))
@@ -129,11 +129,11 @@ class Controller
 					$key = $value;
 					unset($value);
 				}
-				if (isset($value) && isset($value['except']) && in_array($request->action, $value['except']))
+				if (isset($value) && isset($value['except']) && in_array($action, $value['except']))
 					continue;
-				if (isset($value) && isset($value['only']) && !in_array($request->action, $value['only']))
+				if (isset($value) && isset($value['only']) && !in_array($action, $value['only']))
 					continue;
-				
+
 				if (isset($value) && isset($value['options']))
 					$this->$key($value['options']);
 				else
