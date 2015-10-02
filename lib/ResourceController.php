@@ -14,8 +14,9 @@ class ResourceController extends Controller
 		}
 
 		// Process the given action
-        $opts = count($args) > 0 ? $args[0] : array('show');
+        $opts = count($args) > 0 && count($args[0]) > 0 ? $args[0] : array('show');
         $action = array_shift($opts);
+		$action = trim($action) == '' ? 'show' : $action;
 
 		$method_name = null;
 		if (isset($this->actions[$action])) {
