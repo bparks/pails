@@ -96,6 +96,10 @@ class Application
 	public function run()
 	{
 		$request = $this->requestForUri($_SERVER['REQUEST_URI']);
+		if ($request == null) {
+			$this->respond404();
+			return;
+		}
 		$controller = Controller::getInstance($request->controller_name, $this->areas);
 
 		// This is where I stopped refactoring
@@ -140,18 +144,14 @@ class Application
 		//	array_shift($opts);
 		//	$action_result = count($opts) ? $controller->$action_name($opts) : $controller->$action_name();
 		} else {
-			header('HTTP/1.1 404 File Not Found');
-			echo 'The controller ' . $request->controller_name . ' does not have a public method ' . $request->action . '.';
-			exit();
+			$this->respond404('The controller ' . $request->controller_name . ' does not have a public method ' . $request->action . '.');
 		}
 
 		if (is_int($action_result))
 		{
 			if ($action_result == 404)
 			{
-				header('HTTP/1.1 404 File Not Found');
-				echo 'The page ' . $_SERVER['REQUEST_URI'] . ' could not be found.';
-				exit();
+				$this->respond404();
 			}
 			else if ($action_result == 302)
 			{
@@ -211,6 +211,17 @@ class Application
 		}
 	}
 
+	private function respond404($message = null)
+	{
+		header('HTTP/1.1 404 File Not Found');
+		if ($message == null) {
+			echo 'The page ' . $_SERVER['REQUEST_URI'] . ' could not be found.';
+		} else {
+			echo $message;
+		}
+		exit();
+	}
+
 	public function requestForUri($uri, $routes = null)
 	{
 		if ($routes == null)
@@ -266,8 +277,11 @@ class Application
 			}
 		}
 
-		$request->raw_parts = $raw_parts;
-		$request->controller_name = Utilities::toClassName($request->controller) . 'Controller';
+		if ($request != null)
+		{
+			$request->raw_parts = $raw_parts;
+			$request->controller_name = Utilities::toClassName($request->controller) . 'Controller';
+		}
 
 		return $request;
 	}

@@ -115,3 +115,59 @@ describe('A more advanced route definition', function () {
 		expect($request->opts)->toBe(array('users', 'add'));
 	});
 });
+
+describe('A route definition from a live app', function () {
+	$app = new \Pails\Application(array(
+		'routes' => [
+			'*' => [false, false],
+			'api' => [
+				'v1' => [
+					'campaigns' => ['Api\V1\Campaigns', false],
+					'booths' => ['Api\V1\Booths', false],
+					'campaign_stats' => ['Api\V1\CampaignStats', false]
+				],
+				'post' => ['Api', 'post'],
+				'ping' => ['Api', 'ping']
+			]
+		],
+		'app_name' => 'booth_cloud'
+	));
+	$request = null;
+
+	it ('should still respond to a default route', function () use ($app, $request) {
+		$request = $app->requestForUri("/");
+        expect($request)->not()->toBe(null);
+        expect($request->controller)->toBe('booth_cloud');
+        expect($request->controller_name)->toBe('BoothCloudController');
+        expect($request->action)->toBe('index');
+	});
+
+	it ('should have a campaigns page', function () use ($app, $request) {
+		$request = $app->requestForUri("/campaigns/");
+        expect($request)->not()->toBe(null);
+        expect($request->controller)->toBe('campaigns');
+        expect($request->controller_name)->toBe('CampaignsController');
+        expect($request->action)->toBe('index');
+	});
+
+	it ('should find the api', function () use ($app, $request) {
+		$request = $app->requestForUri("/api/v1/campaigns/");
+        expect($request)->not()->toBe(null);
+        expect($request->controller)->toBe('Api\V1\Campaigns');
+        expect($request->controller_name)->toBe('Api\V1\CampaignsController');
+        expect($request->action)->toBe('index');
+	});
+
+	it ('should find api controller', function () use ($app, $request) {
+		$request = $app->requestForUri("/api/post");
+        expect($request)->not()->toBe(null);
+        expect($request->controller)->toBe('Api');
+        expect($request->controller_name)->toBe('ApiController');
+        expect($request->action)->toBe('post');
+	});
+
+	it ('should properly handle nonexistent routes', function () use ($app, $request) {
+		$request = $app->requestForUri("/api/none");
+        expect($request)->toBe(null);
+	});
+});
