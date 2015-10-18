@@ -147,27 +147,27 @@ class Application
 			$this->respond404('The controller ' . $request->controller_name . ' does not have a public method ' . $request->action . '.');
 		}
 
-		if (is_int($action_result))
-		{
-			if ($action_result == 404)
-			{
+		if (is_subclass_of($action_result, '\Pails\ActionResult')) {
+			$action_result->render();
+			return;
+		} elseif (is_int($action_result)) {
+			Application::log('Returning an HTTP status code from an action is deprecated. Use $this->redirect(_path_) or $this->notFound() instead.');
+			if ($action_result == 404) {
 				$this->respond404();
-			}
-			else if ($action_result == 302)
-			{
-				header('HTTP/1.1 302 Found');
-				header('Location: ' . $controller->model);
-				echo 'The page has moved to ' . $controller->model;
-				exit();
+			} else if ($action_result == 302) {
+				$result = new RedirectResult($controller->model);
+				$result->render();
 			}
 		}
 
 		if ($controller->view)
 		{
+			Application::log('Specifying the view on the controller is deprecated. Use a ViewResult (or $this->view()) instead.');
 			$controller->render_page();
 		}
 		else
 		{
+			Application::log('Setting view to false and returning an object is deprecated. Use a JsonResult (or $this->json()) instead.');
 			echo json_encode($action_result);
 		}
 	}
@@ -213,13 +213,8 @@ class Application
 
 	private function respond404($message = null)
 	{
-		header('HTTP/1.1 404 File Not Found');
-		if ($message == null) {
-			echo 'The page ' . $_SERVER['REQUEST_URI'] . ' could not be found.';
-		} else {
-			echo $message;
-		}
-		exit();
+		$result = new NotFoundResult($message);
+		$result->render();
 	}
 
 	public function requestForUri($uri, $routes = null)

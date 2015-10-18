@@ -92,6 +92,31 @@ class Controller
 		include(self::get_path_for('view', $path, $this->areas));
 	}
 
+	protected function redirect($url)
+	{
+		return new RedirectResult($url);
+	}
+
+	protected function notFound($message = null)
+	{
+		return new NotFoundResult($message);
+	}
+
+	protected function _view($view = null)
+	{
+		return new ViewResult($this, $view);
+	}
+
+	protected function content($content)
+	{
+		return new ContentResult($content);
+	}
+
+	protected function json($object)
+	{
+		return new JsonResult($object);
+	}
+
 	public function do_before_actions($action)
 	{
 		//Handle before actions

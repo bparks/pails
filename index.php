@@ -5,6 +5,12 @@ require_once(__DIR__.'/lib/Controller.php');
 require_once(__DIR__.'/lib/ResourceController.php');
 require_once(__DIR__.'/lib/Request.php');
 require_once(__DIR__.'/lib/Utilities.php');
+require_once(__DIR__.'/lib/ActionResult.php');
+require_once(__DIR__.'/lib/RedirectResult.php');
+require_once(__DIR__.'/lib/NotFoundResult.php');
+require_once(__DIR__.'/lib/ViewResult.php');
+require_once(__DIR__.'/lib/ContentResult.php');
+require_once(__DIR__.'/lib/JsonResult.php');
 
 //If we're running as a web app, bring us to the root of the app
 if (isset($_SERVER['DOCUMENT_ROOT']) && $_SERVER['DOCUMENT_ROOT'] != '') {
