@@ -66,6 +66,15 @@ describe('A route definition', function() {
 		expect($request->controller)->toBe('default');
 		expect($request->action)->toBe('endpoint');
 	});
+
+	//OK. The below is a test for issue #20. However, ths problem is that we
+	//really don't have enough information to determine this here. SOME endpoints
+	//may be ok with extra options, but that has to be determined based on whether
+	//the action has an $opts argument.
+	/*it ('should reject paths with excess information', function () use ($app, $request) {
+		$request = $app->requestForUri("/default/endpoint/subendpoint");
+		expect($request)->toBe(null);
+	});*/
 });
 
 describe('A more advanced route definition', function () {
