@@ -136,13 +136,14 @@ class Application
 			array_shift($opts);
 			array_shift($opts);
 			$action_result = $controller->$action_name($opts);
-		//} elseif ($has_call_method) {
-		//	//The call method is responsible for calling do_before_actions and do_after_actions
-		//	$action_name = $request->action;
-		//	$opts = $request->raw_parts;
-		//	array_shift($opts);
-		//	array_shift($opts);
-		//	$action_result = count($opts) ? $controller->$action_name($opts) : $controller->$action_name();
+		} elseif ($has_call_method) {
+			//This case is still required for some plugins
+			//The __call method is responsible for calling do_before_actions and do_after_actions
+			$action_name = $request->action;
+			$opts = $request->raw_parts;
+			array_shift($opts);
+			array_shift($opts);
+			$action_result = count($opts) ? $controller->$action_name($opts) : $controller->$action_name();
 		} else {
 			$this->respond404('The controller ' . $request->controller_name . ' does not have a public method ' . $request->action . '.');
 		}

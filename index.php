@@ -67,7 +67,22 @@ catch (Exception $e)
 	else
 	{
 		header('HTTP/1.0 500 Internal Server Error');
-		echo '<pre>'.$long_message.'</pre>';
+		if (Pails\Application::environment() == 'production') {
+			dump("An error occured");
+		} else {
+			dump($long_message);
+		}
+	}
+}
+
+function dump($message)
+{
+	if (strpos($_SERVER['HTTP_ACCEPT'], 'text/html') !== false) {
+		echo '<pre>'.$message'</pre>';
+	} elseif (strpos($_SERVER['HTTP_ACCEPT'], 'application/json') !== false) {
+		echo json_encode($message);
+	} else {
+		echo $message;
 	}
 }
 
