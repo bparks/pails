@@ -229,7 +229,7 @@ class Application
 
 		$url = parse_url($uri);
 		$request = null;
-		$raw_parts = explode('/', substr($url['path'], 1));
+		$raw_parts = preg_split('@/@', substr($url['path'], 1), NULL, PREG_SPLIT_NO_EMPTY);
 		$opts = $raw_parts;
 
 		foreach ($this->routers as $router) {
@@ -247,7 +247,7 @@ class Application
 			$current_route = null;
 			if (array_key_exists('*', $routes))
 				$current_route = $routes['*'];
-			if ($opts[0] != '*' /* '*' is not a valid route */
+			if (count($opts) > 0 && $opts[0] != '*' /* '*' is not a valid route */
 				&& array_key_exists($opts[0], $routes))
 				$current_route = $routes[$opts[0]];
 
@@ -288,7 +288,7 @@ class Application
 
 	private function default_controller($request, $uri_parts)
 	{
-		return strlen($uri_parts[0]) > 0 ? $uri_parts[0] : $this->app_name;
+		return count($uri_parts) > 0 && $uri_parts[0] != '' ? $uri_parts[0] : $this->app_name;
 	}
 
 	private function default_action($request, $uri_parts)

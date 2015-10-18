@@ -60,6 +60,12 @@ describe('A route definition', function() {
         expect($request->controller)->toBe('proxy');
         expect($request->action)->toBe('endpoint');
 	});
+
+	it ('should ignore empty path components', function () use ($app, $request) {
+		$request = $app->requestForUri("/default//endpoint");
+		expect($request->controller)->toBe('default');
+		expect($request->action)->toBe('endpoint');
+	});
 });
 
 describe('A more advanced route definition', function () {
