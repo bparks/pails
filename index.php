@@ -78,7 +78,7 @@ catch (Exception $e)
 function dump($message)
 {
 	if (strpos($_SERVER['HTTP_ACCEPT'], 'text/html') !== false) {
-		echo '<pre>'.$message'</pre>';
+		echo '<pre>'.$message.'</pre>';
 	} elseif (strpos($_SERVER['HTTP_ACCEPT'], 'application/json') !== false) {
 		echo json_encode($message);
 	} else {

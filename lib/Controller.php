@@ -1,4 +1,5 @@
 <?php
+define('kPailsAlerts', '__pails_alerts');
 
 namespace Pails;
 
@@ -7,6 +8,7 @@ class Controller
 	public $areas;
 	public $view;
 	private $view_path;
+	private $current_alerts;
 	public $model;
 	public $layout;
 
@@ -60,6 +62,33 @@ class Controller
 		else
 			echo 'The ' . $type . ' ' . $path . ' does not exist.';
 		exit();
+	}
+
+	public function __construct ()
+	{
+		if (isset($_SESSION[kPailsAlerts]) && is_array($_SESSION[kPailsAlerts])) {
+			$this->current_alerts = $_SESSION[kPailsAlerts];
+			unset($_SESSION[kPailsAlerts]);
+		} else {
+			$this->current_alerts = [];
+		}
+	}
+
+	public function flash($key = null, $value = null)
+	{
+		if ($key != null && $value != null) {
+			if (!isset($_SESSION[kPailsAlerts]))
+				$_SESSION[kPailsAlerts] = [];
+			$_SESSION[kPailsAlerts][$key] = $value;
+		}
+		return $this->current_alerts;
+	}
+
+	public function flashNow($key, $value)
+	{
+		if ($key != null && $value != null) {
+			$this->current_alerts[$key] = $value;
+		}
 	}
 
 	public function render_page()
