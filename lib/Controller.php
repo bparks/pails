@@ -1,7 +1,7 @@
 <?php
-define('kPailsAlerts', '__pails_alerts');
-
 namespace Pails;
+
+define('kPailsAlerts', '__pails_alerts');
 
 class Controller
 {
