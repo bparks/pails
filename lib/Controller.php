@@ -131,7 +131,7 @@ class Controller
 		return new NotFoundResult($message);
 	}
 
-	protected function _view($view = null)
+	protected function view($view = null)
 	{
 		return new ViewResult($this, $view);
 	}
