@@ -2,20 +2,71 @@
 
 namespace Pails;
 
+/**
+* Class that manages the pails application lifecycle
+*/
 class Application
 {
+    /**
+    * @ignore
+    */
     private $connection_strings;
+    /**
+    * @ignore
+    */
     private $routes;
+    /**
+    * @ignore
+    */
     private $app_name;
+    /**
+    * @ignore
+    */
     private $unsafe_mode;
+    /**
+    * @ignore
+    */
     private $areas;
+    /**
+    * @ignore
+    */
     private $yield;
+    /**
+    * @ignore
+    */
     private $routers;
 
+    /**
+    * @ignore
+    */
     private static $environment = '';
+    /**
+    * @ignore
+    */
     private static $configuration = null;
+    /**
+    * @ignore
+    */
     private static $environments = array();
 
+    /**
+    * Get the current environment for the running pails app.
+    *
+    * An environment is simply a collection of configurations and defaults.
+    * Common environments include development (used for local development on a
+    * machine dedicated for that purpose), test (used for the running of unit
+    * or integration tests), staging (used to simulate a production environment),
+    * and production. This may be configured in a `.environment` file at the root
+    * of the application.
+    *
+    * The current environment defaults to "development".
+    *
+    * One particularly useful environment-based default is that in production,
+    * 404s and 500s result in very generic error messages, while in other environments
+    * those errors give more detail as to what is missing and/or a stack trace.
+    *
+    * @return string The current environment.
+    */
     public static function environment()
     {
         if (self::$environment == '')
@@ -30,6 +81,12 @@ class Application
         return self::$environment;
     }
 
+    /**
+    * Write some information to the error log
+    *
+    * @param mixed $obj a value of any type to be written to the log. This
+    *     function uses `print_r` under the hood to automatically format objects
+    */
     public static function log($obj)
     {
         if (self::environment() == 'development')
@@ -44,6 +101,24 @@ class Application
         }
     }
 
+    /**
+    * Set the default configuration, or one for a specific environment
+    *
+    * With one argument, this function expects an array and sets the default
+    * configuration. With two arguments, this function expects a string and an
+    * array and sets the configuration for a specific environment. The
+    * settings appropriate for the current environment are resolved at runtime.
+    *
+    * This function will emit a warning to the log if an environment/default is
+    * defined multiple times. However, the last definition always wins (no
+    * merging is attempted)
+    *
+    * @param mixed $arg1 A string (specifying an environment) or an array
+    *     (representing the default configuration).
+    * @param array $arg2 An array representing the configuration for the
+    *     specified environment. This argument must be present if and only if
+    *     $arg1 is a string.
+    */
     public static function configure($arg1, $arg2 = null)
     {
         if ($arg2 == null) {
@@ -67,6 +142,14 @@ class Application
         }
     }
 
+    /**
+    * Gets the current configuration, based on current environment
+    *
+    * Merges the default configuration with the configuration for the current
+    * environment.
+    *
+    * @return array Full configuration for the current environment
+    */
     public static function config()
     {
         $config = array();
@@ -79,6 +162,9 @@ class Application
         return $config;
     }
 
+    /**
+    * @ignore
+    */
     public function __construct($args)
     {
         if (array_key_exists('connection_strings', $args))
@@ -93,11 +179,18 @@ class Application
         $this->routers = array();
     }
 
+    /**
+    * @ignore
+    */
     public function connection_strings()
     {
         return $this->connection_strings;
     }
 
+    /**
+    * Initializes the list of "areas"; that is, composer plugins that contain
+    * controllers, models, or views. This should not be called directly.
+    */
     public function load_areas()
     {
         //This actually has become an "Area"-loading function since
@@ -116,6 +209,11 @@ class Application
         });
     }
 
+    /**
+    * Runs files in the `app/initializers` directory (in alphabetical order).
+    * Initialization occurs after plugins have been loaded but before the request
+    * is handled. This function should not be called directly.
+    */
     public function initialize()
     {
         if (!file_exists('initializers')) return;
@@ -133,6 +231,9 @@ class Application
         });
     }
 
+    /**
+    * @ignore
+    */
     public function run()
     {
         $request = $this->requestForUri($_SERVER['REQUEST_URI']);
@@ -213,11 +314,25 @@ class Application
         }
     }
 
+    /**
+    * Register a function that will convert a URI to a {@link \Pails\Request}. This
+    * enables the possibility of custom routign rules.
+    *
+    * Routers are evaluated prior to the pails native routing table (the value
+    * of `$ROUTES` in `config/application.php`).
+    *
+    * @param callable $func A function or other callable that takes a single
+    *     string argument (the path component of `$_SERVER['REQUEST_URI']`) and
+    *     returns a {@link \Pails\Request} object.
+    */
     public function registerRouter($func)
     {
         array_unshift($this->routers, $func);
     }
 
+    /**
+    * @ignore
+    */
     private function each_file($path, $func)
     {
         if ($dir = opendir($path))
@@ -234,6 +349,9 @@ class Application
         }
     }
 
+    /**
+    * @ignore
+    */
     private function each_directory($path, $func)
     {
         if ($dir = opendir($path))
@@ -252,12 +370,18 @@ class Application
         }
     }
 
+    /**
+    * @ignore
+    */
     private function respond404($message = null)
     {
         $result = new NotFoundResult($message);
         $result->render();
     }
 
+    /**
+    * @ignore
+    */
     public function requestForUri($uri, $routes = null)
     {
         if ($routes == null)
@@ -322,11 +446,17 @@ class Application
         return $request;
     }
 
+    /**
+    * @ignore
+    */
     private function default_controller($request, $uri_parts)
     {
         return count($uri_parts) > 0 && $uri_parts[0] != '' ? $uri_parts[0] : $this->app_name;
     }
 
+    /**
+    * @ignore
+    */
     private function default_action($request, $uri_parts)
     {
         return count($uri_parts) > 1 && $uri_parts[1] != '' ? $uri_parts[1] : 'index';

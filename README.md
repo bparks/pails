@@ -140,8 +140,8 @@ works really well with PHP-ActiveRecord, which you can get through composer:
 composer require php-activerecord
 ```
 
-Controllers go in /controllers with names like StuffController (case matters)
-and extend \Pails\Controller.
+Controllers go in /controllers with names like `StuffController` (case matters)
+and extend `\Pails\Controller` or `\Pails\ResourceController`.
 
 Views go in /views, in subfolders named by controller (all lowercase). Thus, a
 view for the 'index' action of StuffController would be views/stuff/index.php.
@@ -156,7 +156,7 @@ that. The trend of how to use a composer package with pails is:
 
 1. Install the package from composer
 2. If required, initialize the package in `initializers/_startup.php` or your own
-   initializer (initializers are evaluated alphabetically; _startup MUST be first).
+   initializer (initializers are evaluated alphabetically; `_startup` MUST be first).
 3. Use the `use` keyword in application logic to include functionality, just like in
    any other PHP app.
 
@@ -197,6 +197,15 @@ Questions?
 ==========
 
 Send email to bparks@brianparks.me.
+
+Other notes
+===========
+
+To generate documentation for the library, run the following command:
+
+```sh
+phpdoc -d lib -t doc
+```
 
 [blog]: http://brianparks.me/blog/
 [gplv3]: http://www.gnu.org/licenses/gpl-3.0.html

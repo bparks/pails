@@ -3,15 +3,45 @@ namespace Pails;
 
 define('kPailsAlerts', '__pails_alerts');
 
+/**
+* Base class for all Pails controllers.
+*/
 class Controller
 {
+    /**
+    * @ignore
+    */
 	public $areas;
+    /**
+    * @ignore
+    */
 	public $view;
+    /**
+    * @ignore
+    */
 	private $view_path;
+    /**
+    * @ignore
+    */
 	private $current_alerts;
+    /**
+    * @ignore
+    */
 	public $model;
+    /**
+    * @ignore
+    */
 	public $layout;
 
+	/**
+	* Used to initialize a controller with the current request. (This should not
+	* be used directly by application code.)
+	*
+	* @param string $controller_name The full classname, including any namespace.
+	* @param array $areas A list of plugins which also contain controllers.
+	*
+	* @return Controller A new instance of the named controller.
+	*/
 	public static function getInstance($controller_name, $areas)
 	{
 		$controller_path = self::get_path_for('controller', $controller_name, $areas);
@@ -42,6 +72,16 @@ class Controller
 		return $controller;
 	}
 
+	/**
+	* Used to find the source file for a controller or view. (This should not
+	* be used directly in application code.)
+	*
+	* @param string $type `controller` or `view`
+	* @param string $path The name of the controller or the path of the view
+	* @param array $areas A list of plugins which also contain controllers and/or views.
+	*
+	* @return string The path, relative to the `app` directory, of the specified resource.
+	*/
 	private static function get_path_for($type, $path, $areas)
 	{
 		$path = str_replace('\\', DIRECTORY_SEPARATOR, $path);
@@ -64,6 +104,9 @@ class Controller
 		exit();
 	}
 
+    /**
+    * @ignore
+    */
 	public function __construct ()
 	{
 		if (isset($_SESSION[kPailsAlerts]) && is_array($_SESSION[kPailsAlerts])) {
@@ -74,6 +117,19 @@ class Controller
 		}
 	}
 
+    /**
+    * Add a message to the top of the next rendered view OR get the messages for
+    * the current request. This follows the rails convention.
+    *
+    * If both arguments are provided, nothing is returned. If no arguments are
+    * provided, the current messages are returned.
+    *
+    * @param string $key The type of message being displayed (some common values
+    *     are "error", "warning", and "info")
+    * @param string $value The message to display
+    *
+    * @return mixed Nothing, or an associative array of types to messages
+    */
 	public function flash($key = null, $value = null)
 	{
 		if ($key != null && $value != null) {
@@ -84,6 +140,13 @@ class Controller
 		return $this->current_alerts;
 	}
 
+    /**
+    * Add a message to the top of _this_ view. This follows the rails convention.
+    *
+    * @param string $key The type of message being displayed (some common values
+    *     are "error", "warning", and "info")
+    * @param string $value The message to display
+    */
 	public function flashNow($key, $value)
 	{
 		if ($key != null && $value != null) {
@@ -91,6 +154,9 @@ class Controller
 		}
 	}
 
+    /**
+    * @ignore
+    */
 	public function render_page()
 	{
 		$this->view_path = self::get_path_for('view', $this->view, $this->areas);
@@ -106,11 +172,23 @@ class Controller
 		}
 	}
 
+    /**
+    * Renders the appropriate view for the action that has completed. This
+    * method should be called once and only once, in the layout file.
+    */
 	public function render()
 	{
 		include($this->view_path);
 	}
 
+    /**
+    * Renders the specified (partial) view in place. This should only be called
+    * inside of another view.
+    *
+    * @param string $path The path to the view, relative to the views directory
+    * @param mixed $local_model A model to be used inside the partial view. If
+    *     left unspecified, the value of `$this->model` is used.
+    */
 	public function render_partial($path, $local_model = null)
 	{
 		//Save model
@@ -121,31 +199,100 @@ class Controller
 		include(self::get_path_for('view', $path, $this->areas));
 	}
 
+    /**
+    * Get a `RedirectResult` suitable for returning from an action. This represents
+    * a standard HTTP 302 or 307
+    *
+    * @param string $url The url to redirect to
+    *
+    * @return RedirectResult
+    */
 	protected function redirect($url)
 	{
 		return new RedirectResult($url);
 	}
 
+    /**
+    * Get a `NotFoundResult` suitable for returning from an action. This represents
+    * a standard HTTP 404.
+    *
+    * @param string message (Optional) A message to display in addition to the 404
+    *
+    * @return NotFoundResult
+    */
 	protected function notFound($message = null)
 	{
 		return new NotFoundResult($message);
 	}
 
+    /**
+    * Get a `ViewResult` suitable for returning from an action. This represents
+    * an HTML page generated from the specified view
+    *
+    * @param string $view (Optional) The view to render. If unspecified, the
+    *     default (based on controller and action) is used.
+    *
+    * @return ViewResult
+    */
 	protected function view($view = null)
 	{
 		return new ViewResult($this, $view);
 	}
 
+    /**
+    * Get a `ContentResult` suitable for returning from an action. This represents
+    * sending raw content to the browser
+    *
+    * @param string $content The content to return to the browser.
+    *
+    * @return ContentResult
+    */
 	protected function content($content)
 	{
 		return new ContentResult($content);
 	}
 
+    /**
+    * Get a `JsonResult` suitable for returning from an action. This represents
+    * encoding the specified object as JSON and returning that to the browser
+    * with the appropriate content type.
+    *
+    * @param mixed $object The object to JSON-encode back to the browser
+    *
+    * @return JsonResult
+    */
 	protected function json($object)
 	{
 		return new JsonResult($object);
 	}
 
+    /**
+    * Executes methods prior to the action that will fulfill the request.
+    *
+    * Before actions are helpful to authenticate users, set preconditions, or
+    * do any other processing that needs to happen before an action method is
+    * executed. Before actions are defined as a field on the `Controller` class.
+    * For instance, they can be set in a constructor by assigning to `$this->before_actions`.
+    *
+    * This variable is an associative array of method names (that must be members
+    * of the controller, either through inheritance, traits, or direct implementation)
+    * to options (itself an associative array). If all before actions must be
+    * executed for all actions, `$this->before_actions` may be expressed as an
+    * array of method names.
+    *
+    * Before actions are executed for every action on a controller according to
+    * the options given:
+    *   * `except` - an array of actions that should be exempt from this before
+    *     action
+    *   * `only` - an array of actions this before action should apply to; the
+    *     remaining actions are exempt
+    *   * `options` - a value to pass to the before action. The before action
+    *     may take more than one argument as long as all but the first are
+    *     optional.
+    *
+    * @param string $action The name of the action that will fulfill the current
+    *     request.
+    */
 	public function do_before_actions($action)
 	{
 		//Handle before actions
@@ -171,6 +318,34 @@ class Controller
 		}
 	}
 
+    /**
+    * Executes methods after the action that will fulfill the request.
+    *
+    * After actions are helpful to clean up after a controller, set postconditions, or
+    * do any other processing that needs to happen after an action method is
+    * executed, but before the `ActionResult` is rendered. Before actions are
+    * defined as a field on the `Controller` class.
+    * For instance, they can be set in a constructor by assigning to `$this->after_actions`.
+    *
+    * This variable is an associative array of method names (that must be members
+    * of the controller, either through inheritance, traits, or direct implementation)
+    * to options (itself an associative array). If all after actions must be
+    * executed for all actions, `$this->after_actions` may be expressed as an
+    * array of method names.
+    *
+    * After actions are executed for every action on a controller according to
+    * the options given:
+    *   * `except` - an array of actions that should be exempt from this after
+    *     action
+    *   * `only` - an array of actions this after action should apply to; the
+    *     remaining actions are exempt
+    *   * `options` - a value to pass to the after action. The after action
+    *     may take more than one argument as long as all but the first are
+    *     optional.
+    *
+    * @param string $action The name of the action that will fulfill the current
+    *     request.
+    */
 	public function do_after_actions($action)
 	{
 		//Handle after actions
@@ -196,11 +371,26 @@ class Controller
 		}
 	}
 
+    /**
+    * Generates the HTML for an Anti-CSRF hidden field
+    *
+    * Note: this calls `$this->csrf_token()` and should therefore only be called
+    * once per request.
+    *
+    * @return string The HTML for an Anti-CSRF hidden field for the current request.
+    */
 	protected function csrf_hidden_field()
 	{
 		return "<input type=\"hidden\" name=\"csrf-token\" value=\"".$this->csrf_token()."\" />";
 	}
 
+    /**
+    * Generates and saves a CSRF token for this request.
+    *
+    * Note: subsequent calls to this function will generate a new unique token.
+    *
+    * @return string The Anti-CSRF token
+    */
 	protected function csrf_token()
 	{
 		$tok = hash('sha512', $_SERVER['REQUEST_URI'].':'.date('U'));
@@ -209,6 +399,16 @@ class Controller
 		return $tok;
 	}
 
+    /**
+    * Validates an Anti-CSRF token that has been supplied vis POST.
+    *
+    * This method WILL NOT let you supply your record of the Anti-CSRF token,
+    * so you can't accidentally open yourself up to CSRF if you call this method.
+    *
+    * This method will be a great candidate for a before action with a few tweaks.
+    *
+    * @return boolean Whether or not the Anti-CSRF token is validated.
+    */
 	protected function verify_csrf()
 	{
 		if (!isset($_SESSION['csrf-token']) || $_SESSION['csrf-token'] == '')
@@ -220,12 +420,30 @@ class Controller
 		return $_POST['csrf-token'] === $_SESSION['csrf-token'];
 	}
 
+    /**
+    * Indicates whether the current request has been made using HTTPS.
+    *
+    * This is resilient to the use of off-box SSL termination (e.g. by load
+    * balancers), as long as the X-Forwarded-Proto header is set.
+    *
+    * @return boolean True if the request came over HTTPS.
+    */
 	public function is_https()
 	{
 		return (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS']) ||
 			   (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https');
 	}
 
+    /**
+    * Forces the request to be made over HTTPS and redirects if not.
+    *
+    * This will correctly handle insecure POST requests by sending a 307 rather
+    * than a 302.
+    *
+    * This only has an effect in non-development environments.
+    *
+    * This is a great candidate for a before action.
+    */
 	public function require_https()
 	{
 		if (\Pails\Application::environment() != 'production')
