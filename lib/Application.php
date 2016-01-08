@@ -261,10 +261,19 @@ class Application
         }
 
         //Perform the requested action
-        if (in_array($request->action, $functions)) {
+        if (in_array($request->action, $functions) ||
+            in_array(Utilities::dashesToUnderscores($request->action), $functions) ||
+            in_array(Utilities::dashesToMethodName($request->action), $functions)
+        ) {
             $controller->do_before_actions($request->action);
 
+            //Figure out WHICH of the valid action names we are using
             $action_name = $request->action;
+            if (in_array(Utilities::dashesToUnderscores($request->action), $functions))
+                $action_name = Utilities::dashesToUnderscores($request->action);
+            elseif (in_array(Utilities::dashesToMethodName($request->action), $functions))
+                $action_name = Utilities::dashesToMethodName($request->action);
+
             $opts = $request->opts;
             array_shift($opts);
             array_shift($opts);
@@ -440,7 +449,7 @@ class Application
         if ($request != null)
         {
             $request->raw_parts = $raw_parts;
-            $request->controller_name = Utilities::toClassName($request->controller) . 'Controller';
+            $request->controller_name = Utilities::dashesToClassName($request->controller) . 'Controller';
         }
 
         return $request;

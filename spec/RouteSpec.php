@@ -29,6 +29,20 @@ describe('A route', function() {
         expect($request->controller)->toBe('test');
         expect($request->action)->toBe('myaction');
     });
+
+    it('should allow dashes to separate words in a URL', function () use ($app, $request) {
+        $request = $app->requestForUri("/test-app/test-action");
+        expect($request->controller)->toBe('test-app');
+        expect($request->action)->toBe('test-action');
+
+        //The controller
+        expect(\Pails\Utilities::dashesToClassName($request->controller))->toBe('TestApp');
+        expect($request->controller_name)->toBe('TestAppController');
+
+        //The action
+        expect(\Pails\Utilities::dashesToUnderscores($request->action))->toBe('test_action');
+        expect(\Pails\Utilities::dashesToMethodName($request->action))->toBe('testAction');
+    });
 });
 
 describe('A route definition', function() {

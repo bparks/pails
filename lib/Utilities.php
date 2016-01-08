@@ -15,6 +15,21 @@ class Utilities
 	{
 		// underscored to lower-camelcase
 		// e.g. "this_method_name" -> "thisMethodName"
-		return preg_replace('/_(.?)/e',"strtoupper('$1')",$string);
+		return preg_replace_callback('/_(.?)/', function ($m) { return strtoupper($m[1]); },$string);
 	}
+
+    public static function dashesToMethodName ($string)
+    {
+        return self::toTableName(str_replace('-', '_', $string));
+    }
+
+    public static function dashesToClassName ($string)
+    {
+        return self::toClassName(str_replace('-', '_', $string));
+    }
+
+    public static function dashesToUnderscores ($string)
+    {
+        return str_replace('-', '_', $string);
+    }
 }
