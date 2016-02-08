@@ -241,7 +241,7 @@ class Application
             $this->respond404();
             return;
         }
-        $controller = $request->area != null ?
+        $controller = $request->area == null ?
             Controller::getInstance($request->controller_name, $this->areas) :
             Controller::getInstance($request->controller_name, $request->area);
 
