@@ -9,4 +9,5 @@ class Request
 	public $action;
 	public $raw_parts;
 	public $opts;
+	public $area;
 }

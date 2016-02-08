@@ -200,3 +200,44 @@ describe('A route definition from a live app', function () {
         expect($request)->toBe(null);
 	});
 });
+
+describe('A route definition with multiple default routes', function () {
+	$app = new \Pails\Application(array(
+		'routes' => [
+			'*' => [false, false],
+			'api' => [
+				'*' => [false, false, 'api'],
+			],
+			'site' => [
+				'*' => [false, false]
+			],
+		],
+	));
+	$request = null;
+
+	it ('should still respond to a route rooted at /', function () use ($app, $request) {
+		$request = $app->requestForUri('/controller/action');
+        expect($request)->not()->toBe(null);
+        expect($request->controller)->toBe('controller');
+        expect($request->controller_name)->toBe('ControllerController');
+        expect($request->action)->toBe('action');
+	});
+
+	it ('should respond to the same route rooted at /site', function () use ($app, $request) {
+		$request = $app->requestForUri('/site/controller/action');
+        expect($request)->not()->toBe(null);
+        expect($request->controller)->toBe('controller');
+        expect($request->controller_name)->toBe('ControllerController');
+        expect($request->action)->toBe('action');
+        expect($request->area)->toBe(null);
+	});
+
+	it ('should respond to the route rooted at /api and restrict the search to an area', function () use ($app, $request) {
+		$request = $app->requestForUri('/api/controller/action');
+        expect($request)->not()->toBe(null);
+        expect($request->controller)->toBe('controller');
+        expect($request->controller_name)->toBe('ControllerController');
+        expect($request->action)->toBe('action');
+        expect($request->area)->toBe('api');
+	});
+});

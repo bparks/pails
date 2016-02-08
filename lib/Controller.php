@@ -44,10 +44,16 @@ class Controller
 	*/
 	public static function getInstance($controller_name, $areas)
 	{
-		$controller_path = self::get_path_for('controller', $controller_name, $areas);
+		if (is_array($areas))
+			$controller_path = self::get_path_for('controller', $controller_name, $areas);
+		else
+			$controller_path = 'areas/'.$areas.'/controllers/'.$controller_name.'.php';
 
+		//Take this out for version 2.0
 		if (file_exists('controllers/ControllerBase.php'))
 		{
+			if (!defined(ControllerBase))
+				\Pails\Application::log('DEPRECATED: ControllerBase will not be automatically included in future versions of Pails.');
 			include 'controllers/ControllerBase.php';
 		}
 
@@ -159,7 +165,10 @@ class Controller
     */
 	public function render_page()
 	{
-		$this->view_path = self::get_path_for('view', $this->view, $this->areas);
+		if (is_array($this->areas))
+			$this->view_path = self::get_path_for('view', $this->view, $this->areas);
+		else
+			$controller_path = 'areas/'.$areas.'/views/'.$this->view.'.php';
 
 		//Finally, include the layout view, which should render everything
 		if ($this->layout !== false && file_exists($this->layout))

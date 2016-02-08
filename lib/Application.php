@@ -241,7 +241,9 @@ class Application
             $this->respond404();
             return;
         }
-        $controller = Controller::getInstance($request->controller_name, $this->areas);
+        $controller = $request->area != null ?
+            Controller::getInstance($request->controller_name, $this->areas) :
+            Controller::getInstance($request->controller_name, $request->area);
 
         // This is where I stopped refactoring
         $controller->view = $request->controller.'/'.$request->action;
@@ -441,6 +443,9 @@ class Application
                     $request->action = $this->default_action($request, $raw_parts);
                 else
                     $request->action = $current_route[1];
+
+                if (isset($current_route[2]))
+                    $request->area = $current_route[2];
             }
         }
 
