@@ -344,17 +344,15 @@ class Application
     */
     private function each_file($path, $func)
     {
-        if ($dir = opendir($path))
+        $file_list = scandir($path);
+        foreach ($file_list as $entry)
         {
-            while (false !== ($entry = readdir($dir)))
-            {
-                $item = $path.'/'.$entry;
+            $item = $path.'/'.$entry;
 
-                if (!is_file($item))
-                    continue; //Don't care about non-directories
+            if (!is_file($item))
+                continue; //Don't care about non-directories
 
-                $func($item);
-            }
+            $func($item);
         }
     }
 
