@@ -168,7 +168,7 @@ class Controller
 		if (is_array($this->areas))
 			$this->view_path = self::get_path_for('view', $this->view, $this->areas);
 		else
-			$controller_path = 'areas/'.$areas.'/views/'.$this->view.'.php';
+			$controller_path = 'areas/'.$this->areas.'/views/'.$this->view.'.php';
 
 		//Finally, include the layout view, which should render everything
 		if ($this->layout !== false && file_exists($this->layout))
