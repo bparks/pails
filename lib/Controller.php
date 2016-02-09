@@ -205,7 +205,12 @@ class Controller
 		if ($local_model)
 			$model = $local_model;
 
-		include(self::get_path_for('view', $path, $this->areas));
+		if (is_array($this->areas))
+			$full_path = self::get_path_for('view', $path, $this->areas);
+		else
+			$full_path = 'areas/'.$this->areas.'/views/'.$path.'.php';
+
+		include($full_path);
 	}
 
     /**
