@@ -5,6 +5,7 @@ class ResourceController extends Controller
 {
 	protected $actions = array();
 	protected $default_action = null;
+	private $last_called = '';
 
 	function __call($name, $args)
     {
@@ -12,6 +13,12 @@ class ResourceController extends Controller
         if ($name == "new") {
             return $this->_new();
 		}
+
+		if ($name == $this->last_called) {
+			return $this->notFound();
+		}
+
+		$this->last_called = $name;
 
 		// Process the given action
         $opts = count($args) > 0 && count($args[0]) > 0 ? $args[0] : array('show');
@@ -24,7 +31,7 @@ class ResourceController extends Controller
 		} elseif ($this->default_action != null) {
 			$method_name = $this->actions[$this->default_action];
 		} else {
-			return 404;
+			return $this->notFound();
 		}
 
 		$this->do_before_actions($action);
