@@ -304,7 +304,7 @@ class Application
             $action_result->render();
             return;
         } elseif (is_int($action_result)) {
-            Application::log('Returning an HTTP status code from an action is deprecated. Use $this->redirect(_path_) or $this->notFound() instead.');
+            Application::log($_SERVER['REQUEST_URI'].' Returning an HTTP status code from an action is deprecated. Use $this->redirect(_path_) or $this->notFound() instead.');
             if ($action_result == 404) {
                 $this->respond404();
             } else if ($action_result == 302) {
@@ -315,12 +315,12 @@ class Application
 
         if ($controller->view)
         {
-            Application::log('Specifying the view on the controller is deprecated. Use a ViewResult (or $this->view()) instead.');
+            Application::log($_SERVER['REQUEST_URI'].' Specifying the view on the controller is deprecated. Use a ViewResult (or $this->view()) instead.');
             $controller->render_page();
         }
         else
         {
-            Application::log('Setting view to false and returning an object is deprecated. Use a JsonResult (or $this->json()) instead.');
+            Application::log($_SERVER['REQUEST_URI'].' Setting view to false and returning an object is deprecated. Use a JsonResult (or $this->json()) instead.');
             echo json_encode($action_result);
         }
     }
