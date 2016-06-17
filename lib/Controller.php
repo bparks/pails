@@ -201,9 +201,13 @@ class Controller
 	public function render_partial($path, $local_model = null)
 	{
 		//Save model
+        $save_model = $this->model;
+
 		$model = $this->model;
-		if ($local_model)
+		if ($local_model) {
 			$model = $local_model;
+            $this->model = $local_model;
+        }
 
 		if (is_array($this->areas))
 			$full_path = self::get_path_for('view', $path, $this->areas);
@@ -211,6 +215,9 @@ class Controller
 			$full_path = 'areas/'.$this->areas.'/views/'.$path.'.php';
 
 		include($full_path);
+
+        //Restore saved model
+        $this->model = $save_model;
 	}
 
     /**
