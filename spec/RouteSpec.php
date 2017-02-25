@@ -43,6 +43,24 @@ describe('A route', function() {
         expect(\Pails\Utilities::dashesToUnderscores($request->action))->toBe('test_action');
         expect(\Pails\Utilities::dashesToMethodName($request->action))->toBe('testAction');
     });
+
+    it('should remove empty path components in the middle', function () use ($app, $request) {
+        $request = $app->requestForUri("/test-app//test-action");
+        expect($request->controller)->toBe('test-app');
+        expect($request->action)->toBe('test-action');
+    });
+
+    it('should remove empty path components at the beginning', function () use ($app, $request) {
+        $request = $app->requestForUri("//test-app/test-action");
+        expect($request->controller)->toBe('test-app');
+        expect($request->action)->toBe('test-action');
+    });
+
+    it('should ignore querystring stuff', function () use ($app, $request) {
+        $request = $app->requestForUri("/test-app/test-action?a=b");
+        expect($request->controller)->toBe('test-app');
+        expect($request->action)->toBe('test-action');
+    });
 });
 
 describe('A route definition', function() {

@@ -396,9 +396,12 @@ class Application
         if ($routes == null)
             $routes = $this->routes;
 
-        $url = parse_url($uri);
+        //$url = parse_url($uri);
+        $url = $uri;
+        if (($idx = strpos($uri, '?')) !== false)
+            $url = substr($uri, 0, $idx);
         $request = null;
-        $raw_parts = preg_split('@/@', substr($url['path'], 1), NULL, PREG_SPLIT_NO_EMPTY);
+        $raw_parts = preg_split('/\//', $url, NULL, PREG_SPLIT_NO_EMPTY);
         $opts = $raw_parts;
 
         foreach ($this->routers as $router) {
