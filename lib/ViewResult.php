@@ -21,7 +21,10 @@ class ViewResult extends ActionResult
 		// Save the old model, just in case
 		$save_model = $this->controller->model;
 
-		$this->controller->model = $this->model;
+		if ($this->model !== null) {
+			$this->controller->model = $this->model;
+		}
+		
 		$this->controller->render_page();
 
 		// And restore the saved model at the end
