@@ -255,9 +255,9 @@ class Controller
     *
     * @return ViewResult
     */
-	protected function view($view = null)
+	protected function view($view = null, $model = null)
 	{
-		return new ViewResult($this, $view);
+		return new ViewResult($this, $view, $model);
 	}
 
     /**
