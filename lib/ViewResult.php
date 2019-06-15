@@ -12,8 +12,7 @@ class ViewResult extends ActionResult
 		$this->controller = $controller;
 		if ($view != null)
 			$this->controller->view = $view;
-		if ($model != null)
-			$this->model = $model;
+		$this->model = $model;
 	}
 
 	public function render()

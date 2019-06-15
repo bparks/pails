@@ -405,7 +405,8 @@ class Application
         $opts = $raw_parts;
 
         foreach ($this->routers as $router) {
-            $req = $router($url['path']);
+            $path = '/'.implode('/', $raw_parts);
+            $req = $router($path);
             if (!$req) continue;
             $request = $req;
             break;
