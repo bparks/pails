@@ -15,7 +15,7 @@ class NotFoundResult extends ActionResult
 	{
 		header('HTTP/1.1 404 File Not Found');
 		if ($this->message == null) {
-			echo 'The page could not be found.';
+			echo 'The page ' . \htmlspecialchars(\urldecode($_SERVER['REQUEST_URI'])) . ' could not be found.';
 		} else {
 			echo $this->message;
 		}
