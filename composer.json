@@ -2,9 +2,13 @@
     "name": "pails/pails",
     "type": "library",
     "description": "The lightest, most powerful PHP MVC framework for rapid application development",
-    "keywords": ["mvc","application","framework"],
+    "keywords": [
+        "mvc",
+        "application",
+        "framework"
+    ],
     "homepage": "http://github.com/bparks/pails",
-    "license": "GPLv3",
+    "license": "GPL-3.0-or-later",
     "authors": [
         {
             "name": "Brian Parks",
