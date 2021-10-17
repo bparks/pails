@@ -26,6 +26,6 @@
         }
     },
     "require-dev": {
-        "phpspec/prophecy": "^1.4"
+        "phpunit/phpunit": "^9"
     }
 }
