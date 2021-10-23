@@ -327,9 +327,9 @@ class Application
 
     /**
     * Register a function that will convert a URI to a {@link \Pails\Request}. This
-    * enables the possibility of custom routign rules.
+    * enables the possibility of custom routing rules.
     *
-    * Routers are evaluated prior to the pails native routing table (the value
+    * Routers are evaluated prior to the (DEPRECATED) pails native routing table (the value
     * of `$ROUTES` in `config/application.php`).
     *
     * @param callable $func A function or other callable that takes a single
