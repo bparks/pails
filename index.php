@@ -33,6 +33,21 @@ date_default_timezone_set($TIME_ZONE);
 if (file_exists('../vendor/autoload.php'))
 	require_once('../vendor/autoload.php');
 
+if (isset($ROUTES)) {
+	error_log('$ROUTES is DEPRECATED and will be removed in a future version of pails. '.
+		'Please upgrade your routing table to use the new \Pails\Router() in an initializer');
+}
+
+if (isset($APP_NAME)) {
+	error_log('$APP_NAME is DEPRECATED and will be removed in a future version of pails. '.
+		"Please remove this key, rename your ${APP_NAME}Controller to DefaultController, and ".
+		"rename the folder views/$APP_NAME to views/default");
+}
+
+if (isset($UNSAFE_MODE)) {
+	error_log('$UNSAFE_MODE is DEPRECATED and will be removed in a future version of pails. ');
+}
+
 $application = new Pails\Application(array(
 	'connection_strings' => isset($CONNECTION_STRINGS) ? $CONNECTION_STRINGS : array(),
 	'routes' => isset($ROUTES) ? $ROUTES : array('*' => array(false, false)),

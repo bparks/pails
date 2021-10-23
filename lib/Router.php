@@ -18,13 +18,16 @@ class Router
             $method = $_SERVER['REQUEST_METHOD'];
         
         foreach ($this->routes as $key => $value) {
-            if (self::isMatchFor($key, strtoupper($method).':'.strtolower($uri))) {
+            // $value is passed in so that route can (potentially) override options
+            // specified by the route config
+            if (self::isMatchFor($key, strtoupper($method).':'.strtolower($uri), $value)) {
                 $req = new \Pails\Request();
                 $req->controller = str_replace('Controller', '', $value['controller']);
                 $req->controller_name = $value['controller'];
                 $req->action = $value['action'];
-                $req->raw_parts = explode('/', $uri);
+                $req->raw_parts = self::splitSegments($uri, true);
                 $req->opts = array_values($value);
+                $req->params = $value;
                 return $req;
             }
         }
