@@ -66,7 +66,7 @@ try
 	session_start();
 
 	if(php_sapi_name() != 'cli')
-		$application->run();
+		$application->run($_SERVER['REQUEST_URI'], $_SERVER['REQUEST_METHOD']);
 	else if (isset($argv[1]))
 		include($argv[1]);
 	else

@@ -26,7 +26,7 @@ class Application
     /**
     * @ignore
     */
-    private $areas;
+    private $areas = [];
     /**
     * @ignore
     */
@@ -234,9 +234,9 @@ class Application
     /**
     * @ignore
     */
-    public function run()
+    public function run($uri, $method)
     {
-        $request = $this->requestForUri($_SERVER['REQUEST_URI']);
+        $request = $this->requestForUri($uri, $method);
         if ($request == null) {
             $this->respond404();
             return;
@@ -279,7 +279,9 @@ class Application
             $opts = $request->opts;
             array_shift($opts);
             array_shift($opts);
-            $action_result = count($opts) ? $controller->$action_name($opts) : $controller->$action_name();
+            $action_result = $request->id !== null ?
+                (count($opts) ? $controller->$action_name($request->id, $opts) : $controller->$action_name($request->id)) :
+                (count($opts) ? $controller->$action_name($opts) : $controller->$action_name());
 
             $controller->do_after_actions($request->action);
         } elseif (is_subclass_of($controller, '\Pails\ResourceController')) {
@@ -304,7 +306,7 @@ class Application
             $action_result->render();
             return;
         } elseif (is_int($action_result)) {
-            Application::log($_SERVER['REQUEST_URI'].' Returning an HTTP status code from an action is deprecated. Use $this->redirect(_path_) or $this->notFound() instead.');
+            Application::log($uri.' Returning an HTTP status code from an action is deprecated. Use $this->redirect(_path_) or $this->notFound() instead.');
             if ($action_result == 404) {
                 $this->respond404();
             } else if ($action_result == 302) {
@@ -315,12 +317,12 @@ class Application
 
         if ($controller->view)
         {
-            Application::log($_SERVER['REQUEST_URI'].' Specifying the view on the controller is deprecated. Use a ViewResult (or $this->view()) instead.');
+            Application::log($uri.' Specifying the view on the controller is deprecated. Use a ViewResult (or $this->view()) instead.');
             $controller->render_page();
         }
         else
         {
-            Application::log($_SERVER['REQUEST_URI'].' Setting view to false and returning an object is deprecated. Use a JsonResult (or $this->json()) instead.');
+            Application::log($uri.' Setting view to false and returning an object is deprecated. Use a JsonResult (or $this->json()) instead.');
             echo json_encode($action_result);
         }
     }
@@ -391,7 +393,7 @@ class Application
     /**
     * @ignore
     */
-    public function requestForUri($uri, $routes = null)
+    public function requestForUri($uri, $method, $routes = null)
     {
         if ($routes == null)
             $routes = $this->routes;
@@ -406,7 +408,7 @@ class Application
 
         foreach ($this->routers as $router) {
             $path = '/'.implode('/', $raw_parts);
-            $req = $router($path);
+            $req = $router($path, $method);
             if (!$req) continue;
             $request = $req;
             break;
@@ -431,7 +433,7 @@ class Application
             if (is_array($current_route) && is_string(key($current_route)))
             {
                 array_shift($opts);
-                $request = $this->requestForUri('/'.implode('/', $opts), $current_route);
+                $request = $this->requestForUri('/'.implode('/', $opts), $method, $current_route);
             }
             else
             {

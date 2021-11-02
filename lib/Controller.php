@@ -43,21 +43,16 @@ class Controller
 	* @return Controller A new instance of the named controller.
 	*/
 	public static function getInstance($controller_name, $areas)
-	{
-		if (is_array($areas))
-			$controller_path = self::get_path_for('controller', $controller_name, $areas);
-		else
-			$controller_path = 'areas/'.$areas.'/controllers/'.$controller_name.'.php';
-
-		//Take this out for version 2.0
-		if (file_exists('controllers/ControllerBase.php'))
-		{
-			if (!defined(ControllerBase))
-				\Pails\Application::log('DEPRECATED: ControllerBase will not be automatically included in future versions of Pails.');
-			include 'controllers/ControllerBase.php';
+	{	
+		if (!class_exists($controller_name)) {
+			if (is_array($areas))
+				$controller_path = self::get_path_for('controller', $controller_name, $areas);
+			else
+				$controller_path = 'areas/'.$areas.'/controllers/'.$controller_name.'.php';
+				
+			include $controller_path;
 		}
 
-		include $controller_path;
 		$controller = new $controller_name();
 
 		//Check to ensure controller inherits from Pails\Controller

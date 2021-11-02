@@ -36,6 +36,11 @@ class Request
 	public $area;
 
 	/**
+	 * The ID of the resource, for requests to resources (note: this is always populated if there is an "id" parameter)
+	 */
+	public $id;
+
+	/**
 	 * An associative array of parameters, usually populated from routes
 	 */
 	public $params;

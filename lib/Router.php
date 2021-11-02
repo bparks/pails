@@ -28,6 +28,8 @@ class Router
                 $req->raw_parts = self::splitSegments($uri, true);
                 $req->opts = array_values($value);
                 $req->params = $value;
+                if (isset($req->params['id']))
+                    $req->id = $req->params['id'];
                 return $req;
             }
         }
@@ -58,6 +60,26 @@ class Router
     public function delete ($pattern, $defaults)
     {
         $this->addRoute($pattern, 'DELETE', $defaults);
+    }
+
+    public function resource ($pattern, $defaults)
+    {
+        // GET {pattern} -> index page
+        // GET {pattern}/new -> _new()
+        // POST {pattern}, {pattern}/new -> create, which is really _new()
+        // GET {pattern}/{id} -> show
+        // GET {pattern}/{id}/edit -> edit
+        // POST {pattern}/{id}, {pattern}/{id}/edit -> update, which is really edit()
+        $this->addRoute($pattern,                 'GET',    array_merge($defaults, ['action' => 'index']));
+        $this->addRoute($pattern,                 'POST',   array_merge($defaults, ['action' => '_new']));
+        $this->addRoute("$pattern/new",           'GET',    array_merge($defaults, ['action' => '_new']));
+        $this->addRoute("$pattern/new",           'POST',   array_merge($defaults, ['action' => '_new']));
+        $this->addRoute("$pattern/{id}",          'GET',    array_merge($defaults, ['action' => 'show']));
+        $this->addRoute("$pattern/{id}",          'POST',   array_merge($defaults, ['action' => 'edit']));
+        $this->addRoute("$pattern/{id}",          'DELETE', array_merge($defaults, ['action' => 'delete']));
+        $this->addRoute("$pattern/{id}/delete",   'POST',   array_merge($defaults, ['action' => 'delete']));
+        $this->addRoute("$pattern/{id}/{action}", 'GET',    $defaults);
+        $this->addRoute("$pattern/{id}/{action}", 'POST',   $defaults);
     }
 
     public function addRoute($pattern, $method, $defaults)
