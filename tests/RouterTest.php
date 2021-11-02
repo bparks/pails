@@ -22,39 +22,39 @@ final class RouterTest extends TestCase
 
     public function testMatchesExactRoute()
     {
-        $this->assertTrue(Router::isMatchFor('/this/is/a/path', '/this/is/a/path'));
+        $this->assertTrue(Router::isMatchFor(['GET', '/this/is/a/path'], ['GET', '/this/is/a/path']));
     }
 
     public function testMatchesExactRouteWithTrailingSlash()
     {
-        $this->assertTrue(Router::isMatchFor('/this/is/a/path', '/this/is/a/path/'));
+        $this->assertTrue(Router::isMatchFor(['GET', '/this/is/a/path'], ['GET', '/this/is/a/path/']));
     }
 
     public function testDoesNotMatchExactRouteWithMissingPieces()
     {
-        $this->assertFalse(Router::isMatchFor('/this/is/', '/this/is/a/path/'));
-        $this->assertFalse(Router::isMatchFor('/this/is/a/path', '/this/is'));
+        $this->assertFalse(Router::isMatchFor(['GET', '/this/is/'], ['GET', '/this/is/a/path/']));
+        $this->assertFalse(Router::isMatchFor(['GET', '/this/is/a/path'], ['GET', '/this/is']));
     }
 
     public function testMatchesWildcardRoute()
     {
-        $this->assertTrue(Router::isMatchFor('/this/is/a/*', '/this/is/a/path'));
+        $this->assertTrue(Router::isMatchFor(['GET', '/this/is/a/*'], ['GET', '/this/is/a/path']));
     }
 
     public function testDoesNotMatchWildcardRouteWithAdditionalPathSegments()
     {
-        $this->assertFalse(Router::isMatchFor('/this/*', '/this/is/a/path'));
+        $this->assertFalse(Router::isMatchFor(['GET', '/this/*'], ['GET', '/this/is/a/path']));
     }
 
     public function testMatchesWildcardRouteWithWildwardInMiddle()
     {
-        $this->assertTrue(Router::isMatchFor('/this/*/a/path', '/this/is/a/path'));
+        $this->assertTrue(Router::isMatchFor(['GET', '/this/*/a/path'], ['GET', '/this/is/a/path']));
     }
 
     public function testMatchesNamedWildcardRoute()
     {
         $opts = [];
-        $this->assertTrue(Router::isMatchFor('/this/{id}', '/this/42', $opts));
+        $this->assertTrue(Router::isMatchFor(['GET', '/this/{id}'], ['GET', '/this/42'], $opts));
         $this->assertEquals(count($opts), 1);
         $this->assertEquals($opts['id'], 42);
     }
@@ -62,7 +62,7 @@ final class RouterTest extends TestCase
     public function testMatchesNamedWildcardsRoute()
     {
         $opts = [];
-        $this->assertTrue(Router::isMatchFor('/this/{id}/{action}', '/this/42/post', $opts));
+        $this->assertTrue(Router::isMatchFor(['GET', '/this/{id}/{action}'], ['GET', '/this/42/post'], $opts));
         $this->assertEquals(count($opts), 2);
         $this->assertEquals($opts['id'], 42);
         $this->assertEquals($opts['action'], 'post');
@@ -70,12 +70,12 @@ final class RouterTest extends TestCase
 
     public function testMatchesMultisegmentWildcardAtEndOfRoute()
     {
-        $this->assertTrue(Router::isMatchFor('/this/**', '/this/is/a/path'));
+        $this->assertTrue(Router::isMatchFor(['GET', '/this/**'], ['GET', '/this/is/a/path']));
     }
 
     public function testMatchesMultisegmentWildcardAtEndOfRouteMissingMatches()
     {
-        $this->assertFalse(Router::isMatchFor('/this/**', '/this/'));
+        $this->assertFalse(Router::isMatchFor(['GET', '/this/**'], ['GET', '/this/']));
     }
 
     public function testGetResourceIndexReturnsProperControllerAndIndex()

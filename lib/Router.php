@@ -20,7 +20,7 @@ class Router
         foreach ($this->routes as $key => $value) {
             // $value is passed in so that route can (potentially) override options
             // specified by the route config
-            if (self::isMatchFor($key, strtoupper($method).':'.strtolower($uri), $value)) {
+            if (self::isMatchFor(explode(':', $key, 2), [strtoupper($method), strtolower($uri)], $value)) {
                 $req = new \Pails\Request();
                 $req->controller = str_replace('Controller', '', $value['controller']);
                 $req->controller_name = $value['controller'];
@@ -93,8 +93,14 @@ class Router
         $this->routes[$key] = $defaults;
     }
 
-    public static function isMatchFor($pattern, $actual, &$opts = []): bool
+    public static function isMatchFor(array $full_pattern, array $full_actual, &$opts = []): bool
     {
+        if ($full_pattern[0] !== $full_actual[0])
+            return false;
+
+        $pattern = $full_pattern[1];
+        $actual = $full_actual[1];
+
         if ($pattern == $actual)
             return true;
 
