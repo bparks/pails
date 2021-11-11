@@ -104,12 +104,6 @@ class Router
         if ($pattern == $actual)
             return true;
 
-        // [x] /auth/login -> /auth/login
-        // [x] /auth/* -> /auth/login, /auth/logout
-        // [x] /auth/{action} -> /auth/login
-        // [x] /auth/{id}/something -> /auth/*
-        // [ ] /auth/**
-
         $pattern_segments = self::splitSegments($pattern, true);
         $actual_segments = self::splitSegments($actual, true);
 
