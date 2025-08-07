@@ -2,6 +2,8 @@
 
 namespace Pails;
 
+use RouteFlags;
+
 /**
 * Class that manages the pails application lifecycle
 */
@@ -440,12 +442,20 @@ class Application
                 $request = new Request();
                 $request->opts = $opts;
 
-                if ($current_route[0] === false)
+                if ($current_route[0] === false) {
+                    self::log("Using `false` for a controller is deprecated. Use RouteFlags::Auto instead.");
+                    $request->controller = $this->default_controller($request, $raw_parts);
+                }
+                elseif ($current_route[0] === RouteFlags::Auto)
                     $request->controller = $this->default_controller($request, $raw_parts);
                 else
                     $request->controller = $current_route[0];
 
-                if ($current_route[1] === false)
+                if ($current_route[1] === false) {
+                    self::log("Using `false` for an action is deprecated. Use RouteFlags::Auto instead.");
+                    $request->action = $this->default_action($request, $raw_parts);
+                }
+                elseif ($current_route[1] === RouteFlags::Auto)
                     $request->action = $this->default_action($request, $raw_parts);
                 else
                     $request->action = $current_route[1];

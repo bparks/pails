@@ -4,7 +4,7 @@ namespace Pails;
 
 class Router
 {
-    public function __construct($app)
+    public function __construct(Application $app)
     {
         if ($app == null)
             throw new \Exception("Must provide an application object to Pails::Router::__construct()");

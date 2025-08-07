@@ -5,6 +5,7 @@ require_once(__DIR__.'/lib/Controller.php');
 require_once(__DIR__.'/lib/ResourceController.php');
 require_once(__DIR__.'/lib/Request.php');
 require_once(__DIR__.'/lib/Router.php');
+require_once(__DIR__.'/lib/RouteFlags.php');
 require_once(__DIR__.'/lib/Utilities.php');
 require_once(__DIR__.'/lib/ActionResult.php');
 require_once(__DIR__.'/lib/RedirectResult.php');
