@@ -312,9 +312,10 @@ class Controller
 	public function do_before_actions($action)
 	{
 		//Handle before actions
-		if (isset($this->before_actions))
-		{
-			foreach ($this->before_actions as $key => $value)
+        if (isset($this->before_actions) || isset($this::$before_actions))
+        {
+            $before_actions = isset($this->before_actions) ? $this->before_actions : $this::$before_actions;
+            foreach ($before_actions as $key => $value)
 			{
 				if (is_int($key))
 				{
@@ -365,9 +366,10 @@ class Controller
 	public function do_after_actions($action)
 	{
 		//Handle after actions
-		if (isset($this->after_actions))
-		{
-			foreach ($this->after_actions as $key => $value)
+        if (isset($this->after_actions) || isset($this::$after_actions))
+        {
+            $after_actions = isset($this->after_actions) ? $this->before_actions : $this::$after_actions;
+            foreach ($after_actions as $key => $value)
 			{
 				if (is_int($key))
 				{

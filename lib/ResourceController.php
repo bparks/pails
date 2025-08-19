@@ -11,7 +11,7 @@ class ResourceController extends Controller
     {
 		// We can't write a "new" function, but it's a convenient pathname
         if ($name == "new") {
-            return $this->_new();
+            $name = "_new";
 		}
 
 		if ($name == $this->last_called) {
